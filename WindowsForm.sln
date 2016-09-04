@@ -1,0 +1,56 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsForm", "WindowsForm\WindowsForm.csproj", "{DAB47015-D6F3-4848-9C6C-4436CD7D2539}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaiPaiAssistant", "PaiPaiAssistant\PaiPaiAssistant.csproj", "{C037B930-CA0A-495E-BC6F-234AA5FD90FA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimuWAPI", "..\..\..\..\..\迅雷下载\SimuWAPI\SimuWAPI\SimuWAPI\SimuWAPI.csproj", "{4A4D991A-BAC9-47FB-BC0D-002F7F9EC3F9}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HupaiAssistant", "..\..\..\..\..\迅雷下载\牌照\HupaiAssistant-master\HupaiAssistant\HupaiAssistant.vcxproj", "{5B09B130-88E4-42B6-87E6-5898BA67E30C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DAB47015-D6F3-4848-9C6C-4436CD7D2539}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DAB47015-D6F3-4848-9C6C-4436CD7D2539}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DAB47015-D6F3-4848-9C6C-4436CD7D2539}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DAB47015-D6F3-4848-9C6C-4436CD7D2539}.Debug|x86.Build.0 = Debug|Any CPU
+		{DAB47015-D6F3-4848-9C6C-4436CD7D2539}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DAB47015-D6F3-4848-9C6C-4436CD7D2539}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DAB47015-D6F3-4848-9C6C-4436CD7D2539}.Release|x86.ActiveCfg = Release|Any CPU
+		{DAB47015-D6F3-4848-9C6C-4436CD7D2539}.Release|x86.Build.0 = Release|Any CPU
+		{C037B930-CA0A-495E-BC6F-234AA5FD90FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C037B930-CA0A-495E-BC6F-234AA5FD90FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C037B930-CA0A-495E-BC6F-234AA5FD90FA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C037B930-CA0A-495E-BC6F-234AA5FD90FA}.Debug|x86.Build.0 = Debug|Any CPU
+		{C037B930-CA0A-495E-BC6F-234AA5FD90FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C037B930-CA0A-495E-BC6F-234AA5FD90FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C037B930-CA0A-495E-BC6F-234AA5FD90FA}.Release|x86.ActiveCfg = Release|Any CPU
+		{C037B930-CA0A-495E-BC6F-234AA5FD90FA}.Release|x86.Build.0 = Release|Any CPU
+		{4A4D991A-BAC9-47FB-BC0D-002F7F9EC3F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A4D991A-BAC9-47FB-BC0D-002F7F9EC3F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A4D991A-BAC9-47FB-BC0D-002F7F9EC3F9}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4A4D991A-BAC9-47FB-BC0D-002F7F9EC3F9}.Debug|x86.Build.0 = Debug|Any CPU
+		{4A4D991A-BAC9-47FB-BC0D-002F7F9EC3F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A4D991A-BAC9-47FB-BC0D-002F7F9EC3F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A4D991A-BAC9-47FB-BC0D-002F7F9EC3F9}.Release|x86.ActiveCfg = Release|Any CPU
+		{4A4D991A-BAC9-47FB-BC0D-002F7F9EC3F9}.Release|x86.Build.0 = Release|Any CPU
+		{5B09B130-88E4-42B6-87E6-5898BA67E30C}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{5B09B130-88E4-42B6-87E6-5898BA67E30C}.Debug|x86.ActiveCfg = Debug|Win32
+		{5B09B130-88E4-42B6-87E6-5898BA67E30C}.Debug|x86.Build.0 = Debug|Win32
+		{5B09B130-88E4-42B6-87E6-5898BA67E30C}.Release|Any CPU.ActiveCfg = Release|Win32
+		{5B09B130-88E4-42B6-87E6-5898BA67E30C}.Release|x86.ActiveCfg = Release|Win32
+		{5B09B130-88E4-42B6-87E6-5898BA67E30C}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
