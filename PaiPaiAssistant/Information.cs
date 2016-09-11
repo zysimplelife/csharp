@@ -12,6 +12,7 @@ using System.Runtime.InteropServices;
 using System.Diagnostics;
 using System.Drawing.Imaging;
 using System.Threading;
+using Tesseract;
 
 namespace PaiPaiAssistant
 {
@@ -25,9 +26,12 @@ namespace PaiPaiAssistant
 
         public static extern int SendMessage(IntPtr hwnd, int wMsg, IntPtr wParam, IntPtr lParam);
 
+        private IntPtr pWndIE;
+
         public Information()
         {
             InitializeComponent();
+            pWndIE = FindWindow("IEFrame", null);
         }
 
         private void Information_Load(object sender, EventArgs e)
@@ -38,7 +42,7 @@ namespace PaiPaiAssistant
         private void btStart_Click(object sender, EventArgs e)
         {
             //Restart  IE相关
-            IntPtr pWndIE = FindWindow("IEFrame", null);
+            pWndIE = FindWindow("IEFrame", null);
             if (pWndIE != IntPtr.Zero)
             {
 
@@ -60,15 +64,42 @@ namespace PaiPaiAssistant
                 Thread.Sleep(1000);
                 pWndIE = FindWindow("IEFrame", null);
             }
+        }
+
+
+        public void ParameterRun(IntPtr pWndIE, String postionCfg)
+        {
+            String start = ConfigurationManager.AppSettings["postion.start"];
+            String[] startPoint = start.Split(',');
+            String position = ConfigurationManager.AppSettings[postionCfg];
+            String[] points = position.Split(',');
 
             RECT rect = new RECT();
             ScreenCapture pc = new ScreenCapture();
-            pc.SetRECT(ref rect, 0, 200, 100, 0);
+            pc.SetRECT(ref rect, Int32.Parse(startPoint[0]) + Int32.Parse(points[0]), Int32.Parse(startPoint[1]) + Int32.Parse(points[1]), Int32.Parse(points[2]), Int32.Parse(points[3]));
 
-            Image image = pc.CaptureWindow(pWndIE, rect);
-            image.Save("./snap.bmp");
+            Image bmp = pc.CaptureWindow(pWndIE, rect);
+            String imgPath = postionCfg.Replace('.', '_') + ".bmp";
+            bmp.Save(imgPath);
 
+            using (var engine = new TesseractEngine(@"./tessdata", "eng", EngineMode.Default))
+            {
+                var img = Pix.LoadFromFile(imgPath);
+                using (var page = engine.Process(img))
+                {
+                    var text = page.GetText();
+                    tbPrice.Text = text;
+                }
+                
+            }
+        }
 
-        }      
+        private void test_sceen_Click(object sender, EventArgs e)
+        {
+            ParameterRun(pWndIE, "postion.test");
+            ParameterRun(pWndIE, "postion.price");
+            ParameterRun(pWndIE, "postion.time");
+
+        }
     }
 }

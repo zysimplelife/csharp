@@ -37,12 +37,23 @@
             this.tbtime = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.flowLayoutPanel2 = new System.Windows.Forms.FlowLayoutPanel();
+            this.test_sceen = new System.Windows.Forms.Button();
             btStart = new System.Windows.Forms.Button();
             this.gbRuntime.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.flowLayoutPanel2.SuspendLayout();
             this.SuspendLayout();
+            // 
+            // btStart
+            // 
+            btStart.Location = new System.Drawing.Point(3, 3);
+            btStart.Name = "btStart";
+            btStart.Size = new System.Drawing.Size(75, 23);
+            btStart.TabIndex = 0;
+            btStart.Text = "启动";
+            btStart.UseVisualStyleBackColor = true;
+            btStart.Click += new System.EventHandler(this.btStart_Click);
             // 
             // gbRuntime
             // 
@@ -118,21 +129,22 @@
             // flowLayoutPanel2
             // 
             this.flowLayoutPanel2.Controls.Add(btStart);
+            this.flowLayoutPanel2.Controls.Add(this.test_sceen);
             this.flowLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flowLayoutPanel2.Location = new System.Drawing.Point(3, 17);
             this.flowLayoutPanel2.Name = "flowLayoutPanel2";
             this.flowLayoutPanel2.Size = new System.Drawing.Size(200, 30);
             this.flowLayoutPanel2.TabIndex = 0;
             // 
-            // btStart
+            // test_sceen
             // 
-            btStart.Location = new System.Drawing.Point(3, 3);
-            btStart.Name = "btStart";
-            btStart.Size = new System.Drawing.Size(75, 23);
-            btStart.TabIndex = 0;
-            btStart.Text = "启动";
-            btStart.UseVisualStyleBackColor = true;
-            btStart.Click += new System.EventHandler(this.btStart_Click);
+            this.test_sceen.Location = new System.Drawing.Point(84, 3);
+            this.test_sceen.Name = "test_sceen";
+            this.test_sceen.Size = new System.Drawing.Size(75, 23);
+            this.test_sceen.TabIndex = 1;
+            this.test_sceen.Text = "测试截屏";
+            this.test_sceen.UseVisualStyleBackColor = true;
+            this.test_sceen.Click += new System.EventHandler(this.test_sceen_Click);
             // 
             // Information
             // 
@@ -163,6 +175,7 @@
         private System.Windows.Forms.TextBox tbtime;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel2;
+        private System.Windows.Forms.Button test_sceen;
     }
 }
 

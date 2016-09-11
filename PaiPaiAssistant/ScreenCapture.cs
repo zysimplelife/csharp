@@ -10,10 +10,10 @@ namespace PaiPaiAssistant
 {
     public struct RECT
     {
-        public int Left;
-        public int Top;
-        public int Right;
-        public int Bottom;
+        public int x;
+        public int y;
+        public int width;
+        public int height;
     } 
 
     class ScreenCapture
@@ -156,8 +156,8 @@ namespace PaiPaiAssistant
             GetWindowRect(hWnd, out rect1);
 
             // 返回指定设备环境句柄对应的位图区域句柄
-            IntPtr hbitmap = CreateCompatibleBitmap(hscrdc, rect1.Right - rect1.Left, rect1.Bottom - rect1.Top);
-            IntPtr myBitmap = CreateCompatibleBitmap(hscrdc, rect.Right - rect.Left, rect.Bottom - rect.Top);
+            IntPtr hbitmap = CreateCompatibleBitmap(hscrdc, rect1.width , rect1.height);
+            IntPtr myBitmap = CreateCompatibleBitmap(hscrdc, rect.width, rect.height);
 
             //把位图选进内存DC 
             // IntPtr OldBitmap = (IntPtr)SelectObject(hmemdc, hbitmap);
@@ -176,7 +176,7 @@ namespace PaiPaiAssistant
             // IntPtr hw = GetDesktopWindow();
             // IntPtr hmemdcClone = GetWindowDC(myBitmap);
 
-            BitBlt(myMemdc, 0, 0, rect.Right - rect.Left, rect.Bottom - rect.Top, hmemdc, rect.Left, rect.Top, CopyPixelOperation.SourceCopy | CopyPixelOperation.CaptureBlt);
+            BitBlt(myMemdc, 0, 0, rect.width , rect.height , hmemdc, rect.x, rect.y, CopyPixelOperation.SourceCopy | CopyPixelOperation.CaptureBlt);
             //SelectObject(myMemdc, myBitmap);
 
             Bitmap bmp = Bitmap.FromHbitmap(myBitmap);
@@ -217,12 +217,12 @@ namespace PaiPaiAssistant
         /// <param name="bottom">下边</param>
         /// <param name="right">右边</param>
         /// <param name="top">上边</param>
-        public void SetRECT(ref RECT rect, int left, int bottom, int right, int top)
+        public void SetRECT(ref RECT rect, int x, int y, int width, int height)
         {
-            rect.Bottom = bottom;
-            rect.Top = top;
-            rect.Left = left;
-            rect.Right = right;
+            rect.width = width;
+            rect.height = height;
+            rect.x = x;
+            rect.y = y;
         }
     }
 
