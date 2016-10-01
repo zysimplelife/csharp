@@ -13,6 +13,7 @@ using System.Diagnostics;
 using System.Drawing.Imaging;
 using System.Threading;
 using Tesseract;
+using System.Drawing.Drawing2D;
 
 namespace PaiPaiAssistant
 {
@@ -78,27 +79,46 @@ namespace PaiPaiAssistant
             ScreenCapture pc = new ScreenCapture();
             pc.SetRECT(ref rect, Int32.Parse(startPoint[0]) + Int32.Parse(points[0]), Int32.Parse(startPoint[1]) + Int32.Parse(points[1]), Int32.Parse(points[2]), Int32.Parse(points[3]));
 
-            Image bmp = pc.CaptureWindow(pWndIE, rect);
-            String imgPath = postionCfg.Replace('.', '_') + ".bmp";
-            bmp.Save(imgPath);
-
-            using (var engine = new TesseractEngine(@"./tessdata", "eng", EngineMode.Default))
+            try
             {
-                var img = Pix.LoadFromFile(imgPath);
-                using (var page = engine.Process(img))
+                Bitmap bmp = pc.CaptureWindow(pWndIE, rect);
+                String imgPath = postionCfg.Replace('.', '_') + ".bmp";
+                bmp.Save(imgPath);
+
+
+                using (var engine = new TesseractEngine(@"./tessdata", "eng", EngineMode.Default))
                 {
-                    var text = page.GetText();
-                    tbPrice.Text = text;
+                    engine.SetVariable("tessedit_char_whitelist", "0123456789");
+                    using (var page = engine.Process(bmp, PageSegMode.SingleLine))
+                    {
+                        var text = page.GetText();
+                        if(text != "")
+                        {
+                            tbPrice.Text = text;
+                        }else
+                        {
+                            tbPrice.Text = "unrecorded";
+                        }
+                        
+                    }
+
                 }
-                
             }
+            catch(Exception e)
+            {
+                MessageBox.Show(e.Message);
+
+            }
+
+           
         }
 
+        
         private void test_sceen_Click(object sender, EventArgs e)
         {
-            ParameterRun(pWndIE, "postion.test");
+            //ParameterRun(pWndIE, "postion.test");
             ParameterRun(pWndIE, "postion.price");
-            ParameterRun(pWndIE, "postion.time");
+            //ParameterRun(pWndIE, "postion.time");
 
         }
     }
