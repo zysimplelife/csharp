@@ -20,27 +20,22 @@ namespace PaiPaiAssistant
 
             this.pIEWnd = pIEWnd;
 
-
         }
 
         
 
-        private void drawPositions()
+        protected override void OnPaint(PaintEventArgs e)
         {
-
+            base.OnPaint(e);
 
             Rectangle rect = ScreenCapture.getWndRect(pIEWnd);
 
-            Graphics gs = CreateGraphics();//创建窗体画板
-            Pen pen = new Pen(Color.Black, 3f);//画笔
+            // 画图 
+            Graphics dc = e.Graphics;
+            Pen bluePen = new Pen(Color.Blue, 3);
+            dc.DrawRectangle(bluePen, rect);
 
-            gs.DrawRectangle(pen, rect);
-            gs.Dispose();
         }
 
-        private void PaintForm_Load(object sender, EventArgs e)
-        {
-            drawPositions();
-        }
     }
 }
