@@ -9,13 +9,13 @@ using System.Windows.Forms;
 
 namespace PaiPaiAssistant
 {
-    public struct RECT
+    struct RECT
     {
-        public int x;
-        public int y;
-        public int width;
-        public int height;
-    } 
+        public int Left; //最左坐标
+        public int Top; //最上坐标
+        public int Right; //最右坐标
+        public int Bottom; //最下坐标
+    }
 
     class ScreenCapture
     {
@@ -120,7 +120,7 @@ namespace PaiPaiAssistant
         /// 全屏指定区域截图
         /// </summary>
         /// <returns></returns>
-        public  Image CaptureScreenI(RECT rect)
+        public  Image CaptureScreenI(Rectangle rect)
         {
             return CaptureWindow(GetDesktopWindow(),rect);
         }
@@ -130,11 +130,10 @@ namespace PaiPaiAssistant
         /// </summary>
         /// <param name="handle">窗口句柄. (在windows应用程序中, 从Handle属性获得)</param>
         /// <returns></returns>
-        public  Bitmap CaptureWindow(IntPtr hWnd)
+        public static Bitmap CaptureWindow(IntPtr hWnd)
         {
             IntPtr hscrdc = GetWindowDC(hWnd);
-            RECT rect = new RECT();
-            return CaptureWindow(hWnd, rect);
+            return CaptureWindow(hWnd, new Rectangle());
         }
 
         /// <summary>
@@ -143,7 +142,7 @@ namespace PaiPaiAssistant
         /// <param name="handle">窗口句柄. (在windows应用程序中, 从Handle属性获得)</param>
         /// <param name="rect">窗口中的一个区域</param>
         /// <returns></returns>
-        public  Bitmap CaptureWindow(IntPtr hWnd,RECT rect)
+        public static Bitmap CaptureWindow(IntPtr hWnd,Rectangle rect)
         {
             // 获取设备上下文环境句柄
             IntPtr hscrdc = GetWindowDC(hWnd);
@@ -153,12 +152,13 @@ namespace PaiPaiAssistant
             IntPtr myMemdc = CreateCompatibleDC(hscrdc);
 
             // 返回指定窗体的矩形尺寸
-            RECT rect1;
-            GetWindowRect(hWnd, out rect1);
+            Rectangle rectWnd =  getWndRect(hWnd);
+
+            
 
             // 返回指定设备环境句柄对应的位图区域句柄
-            IntPtr hbitmap = CreateCompatibleBitmap(hscrdc, rect1.width , rect1.height);
-            IntPtr myBitmap = CreateCompatibleBitmap(hscrdc, rect.width, rect.height);
+            IntPtr hbitmap = CreateCompatibleBitmap(hscrdc, rectWnd.Width, rectWnd.Height);
+            IntPtr myBitmap = CreateCompatibleBitmap(hscrdc, rect.Width, rect.Height);
 
             //把位图选进内存DC 
             // IntPtr OldBitmap = (IntPtr)SelectObject(hmemdc, hbitmap);
@@ -177,7 +177,7 @@ namespace PaiPaiAssistant
             // IntPtr hw = GetDesktopWindow();
             // IntPtr hmemdcClone = GetWindowDC(myBitmap);
 
-            BitBlt(myMemdc, 0, 0, rect.width , rect.height , hmemdc, rect.x, rect.y, CopyPixelOperation.SourceCopy | CopyPixelOperation.CaptureBlt);
+            BitBlt(myMemdc, 0, 0, rect.Width, rect.Height, hmemdc, rect.X, rect.Y, CopyPixelOperation.SourceCopy | CopyPixelOperation.CaptureBlt);
             //SelectObject(myMemdc, myBitmap);
 
             Bitmap bmp = Bitmap.FromHbitmap(myBitmap);
@@ -211,23 +211,8 @@ namespace PaiPaiAssistant
             img.Save(filename, format);
         }
 
-        /// <summary>
-        /// 设置 RECT 的左下右上
-        /// </summary>
-        /// <param name="rect">给出要设定的 RECT</param>
-        /// <param name="left">左边</param>
-        /// <param name="bottom">下边</param>
-        /// <param name="right">右边</param>
-        /// <param name="top">上边</param>
-        public void SetRECT(ref RECT rect, int x, int y, int width, int height)
-        {
-            rect.width = width;
-            rect.height = height;
-            rect.x = x;
-            rect.y = y;
-        }
-
-        public Bitmap ScaleByPercent(Bitmap imgPhoto, int Percent)
+        
+        public static Bitmap ScaleByPercent(Bitmap imgPhoto, int Percent)
         {
             float nPercent = ((float)Percent / 100);
 
@@ -297,6 +282,23 @@ namespace PaiPaiAssistant
             g.Dispose();
             return newBitmap;
         }
+
+        public static Rectangle getWndRect(IntPtr handler)
+        {
+            RECT rect = new RECT();
+
+            GetWindowRect(handler, out rect);
+            return fromRECT(rect);
+        }
+
+        public static Rectangle fromRECT(RECT rect)
+        {
+            return new Rectangle(rect.Left, rect.Top, rect.Right - rect.Left, rect.Bottom - rect.Top);
+
+        }
+
+
+
     }
 
     

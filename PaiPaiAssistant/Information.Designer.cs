@@ -38,6 +38,7 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.flowLayoutPanel2 = new System.Windows.Forms.FlowLayoutPanel();
             this.test_sceen = new System.Windows.Forms.Button();
+            this.btn_show_positions = new System.Windows.Forms.Button();
             btStart = new System.Windows.Forms.Button();
             this.gbRuntime.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
@@ -62,7 +63,7 @@
             this.gbRuntime.Location = new System.Drawing.Point(0, 0);
             this.gbRuntime.Margin = new System.Windows.Forms.Padding(10);
             this.gbRuntime.Name = "gbRuntime";
-            this.gbRuntime.Size = new System.Drawing.Size(206, 81);
+            this.gbRuntime.Size = new System.Drawing.Size(209, 81);
             this.gbRuntime.TabIndex = 0;
             this.gbRuntime.TabStop = false;
             this.gbRuntime.Text = "服务器实时信息";
@@ -76,7 +77,7 @@
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flowLayoutPanel1.Location = new System.Drawing.Point(3, 17);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(200, 61);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(203, 61);
             this.flowLayoutPanel1.TabIndex = 0;
             // 
             // lbPrice
@@ -119,9 +120,9 @@
             // 
             this.groupBox1.Controls.Add(this.flowLayoutPanel2);
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.groupBox1.Location = new System.Drawing.Point(0, 379);
+            this.groupBox1.Location = new System.Drawing.Point(0, 339);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(206, 50);
+            this.groupBox1.Size = new System.Drawing.Size(209, 84);
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "工具";
@@ -130,10 +131,11 @@
             // 
             this.flowLayoutPanel2.Controls.Add(btStart);
             this.flowLayoutPanel2.Controls.Add(this.test_sceen);
+            this.flowLayoutPanel2.Controls.Add(this.btn_show_positions);
             this.flowLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flowLayoutPanel2.Location = new System.Drawing.Point(3, 17);
             this.flowLayoutPanel2.Name = "flowLayoutPanel2";
-            this.flowLayoutPanel2.Size = new System.Drawing.Size(200, 30);
+            this.flowLayoutPanel2.Size = new System.Drawing.Size(203, 64);
             this.flowLayoutPanel2.TabIndex = 0;
             // 
             // test_sceen
@@ -146,11 +148,21 @@
             this.test_sceen.UseVisualStyleBackColor = true;
             this.test_sceen.Click += new System.EventHandler(this.test_sceen_Click);
             // 
+            // btn_show_positions
+            // 
+            this.btn_show_positions.Location = new System.Drawing.Point(3, 32);
+            this.btn_show_positions.Name = "btn_show_positions";
+            this.btn_show_positions.Size = new System.Drawing.Size(75, 23);
+            this.btn_show_positions.TabIndex = 2;
+            this.btn_show_positions.Text = "显示坐标";
+            this.btn_show_positions.UseVisualStyleBackColor = true;
+            this.btn_show_positions.Click += new System.EventHandler(this.btn_show_positions_Click);
+            // 
             // Information
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(206, 429);
+            this.ClientSize = new System.Drawing.Size(209, 423);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.gbRuntime);
             this.Name = "Information";
@@ -176,6 +188,7 @@
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel2;
         private System.Windows.Forms.Button test_sceen;
+        private System.Windows.Forms.Button btn_show_positions;
     }
 }
 
