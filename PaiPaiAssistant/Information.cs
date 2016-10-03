@@ -40,7 +40,7 @@ namespace PaiPaiAssistant
 
             //Init OCA
             engine = new TesseractEngine(@"./tessdata", "eng", EngineMode.Default);
-            engine.SetVariable("tessedit_char_whitelist", "0123456789");
+            engine.SetVariable("tessedit_char_whitelist", "0123456789:");
         }
 
         private void Information_Load(object sender, EventArgs e)
@@ -89,54 +89,45 @@ namespace PaiPaiAssistant
             }
         }
 
-        public void ParameterRun(IntPtr pWndIE, String postionCfg)
+       
+        private String ocrText(IntPtr pWndIE,Rectangle rect)
         {
-            String start = ConfigurationManager.AppSettings["postion.start"];
-            String[] startPoint = start.Split(',');
-
-
-            String position = ConfigurationManager.AppSettings[postionCfg];
-            String[] points = position.Split(',');
-
-            ScreenCapture pc = new ScreenCapture();
-
-            Int32 x = Int32.Parse(startPoint[0]) + Int32.Parse(points[0]);
-            Int32 y = Int32.Parse(startPoint[1]) + Int32.Parse(points[1]);
-            Int32 width = Int32.Parse(points[2]);
-            Int32 height =Int32.Parse(points[3]);
-
             try
             {
-                Bitmap bmp = ScreenCapture.CaptureWindow(pWndIE, new Rectangle(x,y,width,height));
-                String imgPath = postionCfg.Replace('.', '_') + ".bmp";
-                bmp.Save(imgPath);
+                Bitmap bmp = ScreenUtils.CaptureWindow(pWndIE, rect);
+
+               //String imgPath = postionCfg.Replace('.', '_') + ".bmp";
+               //
+               //bmp.Save(imgPath);
+
                 using (var page = engine.Process(bmp, PageSegMode.SingleLine))
                 {
                     var text = page.GetText();
-                    if(text != "")
+                    if (text != "")
                     {
-                        tbPrice.Text = text;
-                    }else
-                    {
-                        tbPrice.Text = "unrecorded";
+                       return text;
                     }
-                        
-                }                
+                    else
+                    {
+                       return "unrecorded";
+                    }
+
+                }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 MessageBox.Show(e.Message);
+                return "unrecorded";
 
             }
-
-           
         }
 
-        
         private void test_sceen_Click(object sender, EventArgs e)
         {
             //ParameterRun(pWndIE, "postion.test");
-            ParameterRun(pWndIE, "postion.price");
+
+            this.tbPrice.Text = ocrText(pWndIE, Configuration.GetPriceRect(false));
+            this.tbtime.Text = ocrText(pWndIE, Configuration.GetTimeRect(false));
             //ParameterRun(pWndIE, "postion.time");
 
         }

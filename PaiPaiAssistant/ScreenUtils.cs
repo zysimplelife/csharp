@@ -17,7 +17,7 @@ namespace PaiPaiAssistant
         public int Bottom; //最下坐标
     }
 
-    class ScreenCapture
+    class ScreenUtils
     {
         [DllImport("user32.dll")]
         private static extern IntPtr GetDC(IntPtr hwnd);

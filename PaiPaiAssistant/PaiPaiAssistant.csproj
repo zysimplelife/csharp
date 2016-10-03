@@ -52,6 +52,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configuration.cs" />
     <Compile Include="Information.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -66,7 +67,7 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ScreenCapture.cs" />
+    <Compile Include="ScreenUtils.cs" />
     <EmbeddedResource Include="Information.resx">
       <DependentUpon>Information.cs</DependentUpon>
     </EmbeddedResource>

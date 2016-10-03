@@ -28,12 +28,22 @@ namespace PaiPaiAssistant
         {
             base.OnPaint(e);
 
-            Rectangle rect = ScreenCapture.getWndRect(pIEWnd);
-
             // 画图 
             Graphics dc = e.Graphics;
-            Pen bluePen = new Pen(Color.Blue, 3);
-            dc.DrawRectangle(bluePen, rect);
+            Pen bluePen = new Pen(Color.Red, 1);
+            Rectangle rectIE = ScreenUtils.getWndRect(pIEWnd);
+
+            // Price
+            Rectangle rectPrice = Configuration.GetPriceRect(false);
+            rectPrice.X += rectIE.X;
+            rectPrice.Y += rectIE.Y;
+            dc.DrawRectangle(bluePen, rectPrice);
+
+            // Time
+            Rectangle rectTime = Configuration.GetTimeRect(false);
+            rectTime.X += rectIE.X;
+            rectTime.Y += rectIE.Y;
+            dc.DrawRectangle(bluePen, rectTime);
 
         }
 
