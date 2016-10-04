@@ -31,6 +31,8 @@ namespace PaiPaiAssistant
         private TesseractEngine engine;
         private PaintForm df;
         private Boolean isDfClosed = true;
+        private Thread ocrThread = null;
+
 
         public Information()
         {
@@ -43,11 +45,17 @@ namespace PaiPaiAssistant
             engine.SetVariable("tessedit_char_whitelist", "0123456789:");
         }
 
-        private void Information_Load(object sender, EventArgs e)
-        {
 
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            base.OnFormClosing(e);
+            if (ocrThread != null)
+            {
+                ocrThread.Abort();
+            }
         }
 
+      
         private void btStart_Click(object sender, EventArgs e)
         {
             //Restart  IE相关
@@ -56,14 +64,28 @@ namespace PaiPaiAssistant
             {
                 if (MessageBox.Show("检测到IE已经打开，是否重新启动？","确认" ,MessageBoxButtons.YesNo) == DialogResult.Yes)
                 {
-                    int WM_CLOSE = 0x0010;
-                    SendMessage(pWndIE, WM_CLOSE, IntPtr.Zero, IntPtr.Zero);
-                    Thread.Sleep(1000);
+                    stopIE();
                     startIE();
+                    setIEWnd();
                 }
-            }else
+            }
+            else
             {
                 startIE();
+                setIEWnd();
+            }
+        }
+
+        private void stopIE()
+        {
+            int WM_CLOSE = 0x0010;
+            SendMessage(pWndIE, WM_CLOSE, IntPtr.Zero, IntPtr.Zero);
+            pWndIE = FindWindow("IEFrame", null);
+
+            while (pWndIE != IntPtr.Zero)
+            {
+                Thread.Sleep(1000);
+                pWndIE = FindWindow("IEFrame", null);
             }
         }
 
@@ -73,10 +95,7 @@ namespace PaiPaiAssistant
             String url = ConfigurationManager.AppSettings["ie.url"];
             ProcessStartInfo info = new ProcessStartInfo("C:\\Program Files\\Internet Explorer\\iexplore.exe");
             info.Arguments += url;
-
             Process.Start(info);
-
-            setIEWnd();
         }
 
         private void setIEWnd()
@@ -126,9 +145,22 @@ namespace PaiPaiAssistant
         {
             //ParameterRun(pWndIE, "postion.test");
 
-            this.tbPrice.Text = ocrText(pWndIE, Configuration.GetPriceRect(false));
-            this.tbtime.Text = ocrText(pWndIE, Configuration.GetTimeRect(false));
+            //this.tbPrice.Text = ocrText(pWndIE, Configuration.GetPriceRect(false));
+            //this.tbtime.Text = ocrText(pWndIE, Configuration.GetTimeRect(false));
             //ParameterRun(pWndIE, "postion.time");
+
+            if(ocrThread == null)
+            {
+                ocrThread = new Thread(new ThreadStart(this.PriceThread));
+                ocrThread.Start();
+            }else
+            {
+                ocrThread.Abort();
+                ocrThread = null;
+            }
+
+            
+
 
         }
 
@@ -149,6 +181,48 @@ namespace PaiPaiAssistant
 
         }
 
+       
+            
+        /// <summary>  
+        /// 不带参数的启动方法  
+        /// </summary>  
+        public void PriceThread()
+        {
+            while (true) {
+
+                String price = ocrText(pWndIE, Configuration.GetPriceRect(false));
+
+                SetTextCallback dp = new SetTextCallback(SetTbPrice);
+                this.Invoke(dp, new object[] { price });
+
+
+                String time = ocrText(pWndIE, Configuration.GetTimeRect(false));
+                SetTextCallback dt = new SetTextCallback(SetTbTime);
+                this.Invoke(dt, new object[] { time });
+
+                Thread.Sleep(200);//让线程暂停  
+            }
+        }
+
       
+
+        delegate void SetTextCallback(string text);
+
+        // This method is passed in to the SetTextCallBack delegate
+        // to set the Text property of textBox1.
+        private void SetTbPrice(string text)
+        {
+            this.tbPrice.Text = text;
+        }
+
+        // This method is passed in to the SetTextCallBack delegate
+        // to set the Text property of textBox1.
+        private void SetTbTime(string text)
+        {
+            this.tbtime.Text = text;
+        }
+
+
+
     }
 }

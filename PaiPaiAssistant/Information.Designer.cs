@@ -167,7 +167,6 @@
             this.Controls.Add(this.gbRuntime);
             this.Name = "Information";
             this.Text = "Information";
-            this.Load += new System.EventHandler(this.Information_Load);
             this.gbRuntime.ResumeLayout(false);
             this.flowLayoutPanel1.ResumeLayout(false);
             this.flowLayoutPanel1.PerformLayout();
