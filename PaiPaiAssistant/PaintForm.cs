@@ -38,48 +38,34 @@ namespace PaiPaiAssistant
             Rectangle rect;
 
             // Price
-            rect = Configuration.GetPriceRect(false);
-            toClient(ref rectIE, ref rect);
-            dc.DrawRectangle(pen, rect);
-
-            // Time
-            rect = Configuration.GetTimeRect(false);
-            toClient(ref rectIE, ref rect);
-            dc.DrawRectangle(pen, rect);
+          //rect = Configuration.GetPriceRect(false);
+          //toClient(ref rectIE, ref rect);
+          //dc.DrawRectangle(pen, rect);
+          //
+          //// Time
+          //rect = Configuration.GetTimeRect(false);
+          //toClient(ref rectIE, ref rect);
+          //dc.DrawRectangle(pen, rect);
 
             // 加价
-            point = Configuration.GetIncreaseButtonPoint(false);
-            toClient(ref rectIE, ref point);
+            point = Configuration.GetClientPoint(Configuration.CONFIG_INC_IN_POINT, pIEWnd);
             dc.FillRectangle(brush, point.X, point.Y,5,5);
 
             // 加价
-            point = Configuration.GetIncreaseInputPoint(false);
-            toClient(ref rectIE, ref point);
+            point = Configuration.GetClientPoint(Configuration.CONFIG_INC_BTN_POINT, pIEWnd);
             dc.FillRectangle(brush, point.X, point.Y, 5, 5);
 
             // 出价
-            point = Configuration.GetSubmitButtonPoint(false);
-            toClient(ref rectIE, ref point);
+            point = Configuration.GetClientPoint(Configuration.CONFIG_SUBMIT_IN_POINT, pIEWnd);
             dc.FillRectangle(brush, point.X, point.Y, 5, 5);
 
 
             // 出价
-            point = Configuration.GetSubmitInputPoint(false);
-            toClient(ref rectIE, ref point);
+            point = Configuration.GetClientPoint(Configuration.CONFIG_SUBMIT_BTN_POINT, pIEWnd);
             dc.FillRectangle(brush, point.X, point.Y, 5, 5);
 
         }
 
-        private static void toClient(ref Rectangle rectIE, ref Point increasePoint)
-        {
-            increasePoint.X += rectIE.X;
-            increasePoint.Y += rectIE.Y;
-        }
-
-        private static void toClient(ref Rectangle rectIE, ref Rectangle rectPrice)
-        {
-            rectPrice.X += rectIE.X;
-            rectPrice.Y += rectIE.Y;
-        }
+       
     }
 }

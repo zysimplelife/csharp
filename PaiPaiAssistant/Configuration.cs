@@ -18,64 +18,57 @@ namespace PaiPaiAssistant
         private static Point submit_button  ;
         private static Point submit_input;
 
+        private static Dictionary<String, Point> pointMap = new Dictionary<string, Point>();
+        private static Dictionary<String, Rectangle> rectMap = new Dictionary<string, Rectangle>();
 
 
-        private static String CONFIG_BASE_POINT = "postion.start" ;
+        public static String CONFIG_BASE_POINT = "postion.start";
+        public static String CONFIG_PRICE_RECT = "postion.price";
+        public static String CONFIG_TIME_RECT = "postion.time";
+        public static String CONFIG_INC_IN_POINT = "position.increase.input";
+        public static String CONFIG_INC_BTN_POINT = "position.increase.button";
+        public static String CONFIG_SUBMIT_IN_POINT = "position.submit.input";
+        public static String CONFIG_SUBMIT_BTN_POINT = "position.submit.button";
 
 
-        public static Rectangle GetPriceRect(Boolean needRresh)
+
+        public static Point GetClientPoint(String key,IntPtr pWnd)
         {
-            if(price.IsEmpty|| needRresh)
+             Point point = new Point();
+
+            if (!pointMap.TryGetValue(key,out point))
+            {
+                point = getPoint(key);
+                pointMap.Add(key,point);
+            }
+            Rectangle wndRect = ScreenUtils.getWndRect(pWnd);
+
+            return new Point(point.X + wndRect.X, point.Y + wndRect.Y);
+        }
+
+
+
+
+
+
+        public static Rectangle GetPriceRect()
+        {
+            if(price.IsEmpty)
             {
                 price = getRect("postion.price");
             }
             return price;
         }
 
-        public static Rectangle GetTimeRect(Boolean needRresh)
+        public static Rectangle GetTimeRect()
         {
-            if (time.IsEmpty || needRresh)
+            if (time.IsEmpty)
             {
                 time = getRect("postion.time");
             }
             return time;
         }
 
-        public static Point GetIncreaseButtonPoint(Boolean needRresh)
-        {
-            if (increase_button.IsEmpty || needRresh)
-            {
-                increase_button = getPoint("position.increase.button");
-            }
-            return increase_button;
-        }
-
-        public static Point GetIncreaseInputPoint(Boolean needRresh)
-        {
-            if (increase_input.IsEmpty || needRresh)
-            {
-                increase_input = getPoint("position.increase.input");
-            }
-            return increase_input;
-        }
-
-        public static Point GetSubmitInputPoint(Boolean needRresh)
-        {
-            if (submit_input.IsEmpty || needRresh)
-            {
-                submit_input = getPoint("position.submit.input");
-            }
-            return submit_input;
-        }
-
-        public static Point GetSubmitButtonPoint(Boolean needRresh)
-        {
-            if (submit_button.IsEmpty || needRresh)
-            {
-                submit_button = getPoint("position.submit.button");
-            }
-            return submit_button;
-        }
 
 
         private static Rectangle getRect(String configKey)

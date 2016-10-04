@@ -68,6 +68,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScreenUtils.cs" />
+    <Compile Include="WinInputHelpers.cs" />
     <EmbeddedResource Include="Information.resx">
       <DependentUpon>Information.cs</DependentUpon>
     </EmbeddedResource>
