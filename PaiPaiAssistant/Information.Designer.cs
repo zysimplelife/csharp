@@ -42,6 +42,12 @@
             this.btn_show_positions = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.flowLayoutPanel3 = new System.Windows.Forms.FlowLayoutPanel();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.flowLayoutPanel4 = new System.Windows.Forms.FlowLayoutPanel();
+            this.target_price = new System.Windows.Forms.Label();
+            this.tb_target_price = new System.Windows.Forms.TextBox();
+            this.remain_price = new System.Windows.Forms.Label();
+            this.tb_differences = new System.Windows.Forms.TextBox();
             btStart = new System.Windows.Forms.Button();
             plus700 = new System.Windows.Forms.Button();
             this.gbRuntime.SuspendLayout();
@@ -50,6 +56,8 @@
             this.flowLayoutPanel2.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.flowLayoutPanel3.SuspendLayout();
+            this.groupBox3.SuspendLayout();
+            this.flowLayoutPanel4.SuspendLayout();
             this.SuspendLayout();
             // 
             // btStart
@@ -194,11 +202,72 @@
             this.flowLayoutPanel3.Size = new System.Drawing.Size(203, 64);
             this.flowLayoutPanel3.TabIndex = 0;
             // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.flowLayoutPanel4);
+            this.groupBox3.Dock = System.Windows.Forms.DockStyle.Top;
+            this.groupBox3.Location = new System.Drawing.Point(0, 81);
+            this.groupBox3.Margin = new System.Windows.Forms.Padding(10);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(209, 81);
+            this.groupBox3.TabIndex = 3;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "拍牌信息";
+            // 
+            // flowLayoutPanel4
+            // 
+            this.flowLayoutPanel4.Controls.Add(this.target_price);
+            this.flowLayoutPanel4.Controls.Add(this.tb_target_price);
+            this.flowLayoutPanel4.Controls.Add(this.remain_price);
+            this.flowLayoutPanel4.Controls.Add(this.tb_differences);
+            this.flowLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.flowLayoutPanel4.Location = new System.Drawing.Point(3, 17);
+            this.flowLayoutPanel4.Name = "flowLayoutPanel4";
+            this.flowLayoutPanel4.Size = new System.Drawing.Size(203, 61);
+            this.flowLayoutPanel4.TabIndex = 0;
+            // 
+            // target_price
+            // 
+            this.target_price.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.target_price.AutoSize = true;
+            this.target_price.Location = new System.Drawing.Point(3, 7);
+            this.target_price.Name = "target_price";
+            this.target_price.Size = new System.Drawing.Size(53, 12);
+            this.target_price.TabIndex = 0;
+            this.target_price.Text = "目标价格";
+            // 
+            // tb_target_price
+            // 
+            this.tb_target_price.Dock = System.Windows.Forms.DockStyle.Top;
+            this.tb_target_price.Location = new System.Drawing.Point(62, 3);
+            this.tb_target_price.Name = "tb_target_price";
+            this.tb_target_price.Size = new System.Drawing.Size(129, 21);
+            this.tb_target_price.TabIndex = 1;
+            // 
+            // remain_price
+            // 
+            this.remain_price.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.remain_price.AutoSize = true;
+            this.remain_price.Location = new System.Drawing.Point(3, 34);
+            this.remain_price.Name = "remain_price";
+            this.remain_price.Size = new System.Drawing.Size(53, 12);
+            this.remain_price.TabIndex = 2;
+            this.remain_price.Text = "相差价格";
+            // 
+            // tb_differences
+            // 
+            this.tb_differences.Dock = System.Windows.Forms.DockStyle.Top;
+            this.tb_differences.Location = new System.Drawing.Point(62, 30);
+            this.tb_differences.Name = "tb_differences";
+            this.tb_differences.Size = new System.Drawing.Size(129, 21);
+            this.tb_differences.TabIndex = 3;
+            // 
             // Information
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(209, 423);
+            this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.gbRuntime);
@@ -211,6 +280,9 @@
             this.flowLayoutPanel2.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.flowLayoutPanel3.ResumeLayout(false);
+            this.groupBox3.ResumeLayout(false);
+            this.flowLayoutPanel4.ResumeLayout(false);
+            this.flowLayoutPanel4.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -229,6 +301,12 @@
         private System.Windows.Forms.Button btn_show_positions;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel3;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel4;
+        private System.Windows.Forms.Label target_price;
+        private System.Windows.Forms.TextBox tb_target_price;
+        private System.Windows.Forms.Label remain_price;
+        private System.Windows.Forms.TextBox tb_differences;
     }
 }
 

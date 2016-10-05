@@ -24,7 +24,6 @@ namespace PaiPaiAssistant
         static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
 
         [DllImport("user32.dll", EntryPoint = "SendMessageA")]
-
         public static extern int SendMessage(IntPtr hwnd, int wMsg, IntPtr wParam, IntPtr lParam);
 
         private IntPtr pWndIE;
@@ -32,6 +31,9 @@ namespace PaiPaiAssistant
         private PaintForm df;
         private Boolean isDfClosed = true;
         private Thread ocrThread = null;
+        private Thread autoConfirmThread   = null;
+
+
 
 
         public Information()
@@ -124,7 +126,7 @@ namespace PaiPaiAssistant
                     var text = page.GetText();
                     if (text != "")
                     {
-                       return text;
+                       return text.Replace(" ", "");
                     }
                     else
                     {
@@ -190,36 +192,19 @@ namespace PaiPaiAssistant
         {
             while (true) {
 
-               String price = ocrText(pWndIE, Configuration.GetClientRect(Configuration.CONFIG_PRICE_RECT));
-               
-               SetTextCallback dp = new SetTextCallback(SetTbPrice);
-               this.Invoke(dp, new object[] { price });
-               
-               String time = ocrText(pWndIE, Configuration.GetClientRect(Configuration.CONFIG_TIME_RECT));
-               SetTextCallback dt = new SetTextCallback(SetTbTime);
-               this.Invoke(dt, new object[] { time });
-               
-               Thread.Sleep(200);//让线程暂停  
+                String price = ocrText(pWndIE, Configuration.GetClientRect(Configuration.CONFIG_PRICE_RECT));
+                tbPrice.Invoke(new Action(() => tbPrice.Text = price));
+
+
+                String time = ocrText(pWndIE, Configuration.GetClientRect(Configuration.CONFIG_TIME_RECT));
+                tbtime.Invoke(new Action(() => tbtime.Text = time));
+
+                Thread.Sleep(200);//让线程暂停  
             }
         }
 
       
 
-        delegate void SetTextCallback(string text);
-
-        // This method is passed in to the SetTextCallBack delegate
-        // to set the Text property of textBox1.
-        private void SetTbPrice(string text)
-        {
-            this.tbPrice.Text = text;
-        }
-
-        // This method is passed in to the SetTextCallBack delegate
-        // to set the Text property of textBox1.
-        private void SetTbTime(string text)
-        {
-            this.tbtime.Text = text;
-        }
 
         private void plus700_Click(object sender, EventArgs e)
         {
@@ -231,8 +216,49 @@ namespace PaiPaiAssistant
 
             WinInputHelpers.MouseMoveToClick(Configuration.GetScreenPoint(Configuration.CONFIG_SUBMIT_BTN_POINT, pWndIE));
 
+            tb_target_price.Text = (Int32.Parse(tbPrice.Text) + 700).ToString();
+
+            autoConfirmThread = new Thread(new ThreadStart(this.AutoConfirmThread));
+
+            autoConfirmThread.Start();
+
         }
 
-      
+        /// <summary>  
+        /// 不带参数的启动方法  
+        /// </summary>  
+        public void AutoConfirmThread()
+        {
+            while (true)
+            {
+                Int32 different = Int32.Parse(readControlText(tb_target_price)) - Int32.Parse(readControlText(tbPrice)) - 300;
+                tb_differences.Invoke(new Action(() => tb_differences.Text = different.ToString()));
+
+
+                if (different <= 100)
+                {
+                    WinInputHelpers.MouseMoveToClick(Configuration.GetScreenPoint(Configuration.CONFIG_CONFIRM_BTN_POINT, pWndIE));
+                    break;
+                }
+
+                Thread.Sleep(100);
+            }
+        }
+
+        public string readControlText(Control varControl)
+        {
+            if (varControl.InvokeRequired)
+            {
+                return (string)varControl.Invoke(
+                  new Func<String>(() => readControlText(varControl))
+                );
+            }
+            else
+            {
+                string varText = varControl.Text;
+                return varText;
+            }
+        }
+
     }
 }

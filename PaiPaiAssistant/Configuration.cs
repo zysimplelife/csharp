@@ -29,6 +29,11 @@ namespace PaiPaiAssistant
         public static String CONFIG_INC_BTN_POINT = "position.increase.button";
         public static String CONFIG_SUBMIT_IN_POINT = "position.submit.input";
         public static String CONFIG_SUBMIT_BTN_POINT = "position.submit.button";
+        public static String CONFIG_VERIFICATION_IN_POINT = "position.verification.input";
+        public static String CONFIG_VERIFICATION_REFESH_POINT = "position.verification.refresh";
+        public static String CONFIG_CONFIRM_BTN_POINT = "position.confirm.button";
+        public static String CONFIG_CANCEL_BTN_POINT = "position.cancel.button";
+
 
 
 

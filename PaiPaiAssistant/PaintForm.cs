@@ -59,7 +59,12 @@ namespace PaiPaiAssistant
 
 
             // 出价
-            point = Configuration.GetScreenPoint(Configuration.CONFIG_SUBMIT_BTN_POINT, pIEWnd);
+            point = Configuration.GetScreenPoint(Configuration.CONFIG_CONFIRM_BTN_POINT, pIEWnd);
+            dc.FillRectangle(brush, point.X, point.Y, 5, 5);
+
+
+            // 出价
+            point = Configuration.GetScreenPoint(Configuration.CONFIG_CANCEL_BTN_POINT, pIEWnd);
             dc.FillRectangle(brush, point.X, point.Y, 5, 5);
 
         }
