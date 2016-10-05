@@ -1142,12 +1142,21 @@ namespace PaiPaiAssistant
 
 
 
-        public static void MouseMoveToClick(Point point)
+        public static void MouseMoveToDoubleClick(Point point)
         {
-            MouseMoveToClick(point.X, point.Y, 0, 100);
+            MouseMoveTo(point.X, point.Y, 0, 100);
+            MouseClick();
+            MouseClick();
         }
 
-        public static void MouseMoveToClick(int x, int y, int maxMove = 0, int interval = 0)
+        public static void MouseMoveToClick(Point point)
+        {
+            MouseMoveTo(point.X, point.Y, 0, 100);
+            MouseClick();
+            MouseClick();
+        }
+
+        public static void MouseMoveTo(int x, int y, int maxMove = 0, int interval = 0)
         {
 
             POINT p = new Point();
@@ -1192,80 +1201,59 @@ namespace PaiPaiAssistant
                                 dwExtraInfo = GetMessageExtraInfo()
                             }
                         }
-                    },
-                    new INPUT()
-                    {
-                        type = InputType.MOUSE,
-                        U = new InputUnion()
-                        {
-                            mi = new MOUSEINPUT()
-                            {
-                                dx = 0,
-                                dy= 0,
-                                mouseData = 0,
-                                time = GetTickCount(),
-                                dwFlags = MOUSEEVENTF.LEFTDOWN,
-                                dwExtraInfo = GetMessageExtraInfo()
-                            }
-                        }
-                    },
-                    new INPUT()
-                    {
-                        type = InputType.MOUSE,
-                        U = new InputUnion()
-                        {
-                            mi = new MOUSEINPUT()
-                            {
-                                dx = 0,
-                                dy= 0,
-                                mouseData = 0,
-                                time = GetTickCount(),
-                                dwFlags = MOUSEEVENTF.LEFTUP,
-                                dwExtraInfo = GetMessageExtraInfo()
-                            }
-                        }
-                    },
-
-                     new INPUT()
-                    {
-                        type = InputType.MOUSE,
-                        U = new InputUnion()
-                        {
-                            mi = new MOUSEINPUT()
-                            {
-                                dx = 0,
-                                dy= 0,
-                                mouseData = 0,
-                                time = GetTickCount(),
-                                dwFlags = MOUSEEVENTF.LEFTDOWN,
-                                dwExtraInfo = GetMessageExtraInfo()
-                            }
-                        }
-                    },
-                    new INPUT()
-                    {
-                        type = InputType.MOUSE,
-                        U = new InputUnion()
-                        {
-                            mi = new MOUSEINPUT()
-                            {
-                                dx = 0,
-                                dy= 0,
-                                mouseData = 0,
-                                time = GetTickCount(),
-                                dwFlags = MOUSEEVENTF.LEFTUP,
-                                dwExtraInfo = GetMessageExtraInfo()
-                            }
-                        }
                     }
-
-
+                   
                 };
 
                 SendInput((uint)pInputs.Length, pInputs, INPUT.Size);
                 if (interval != 0) { System.Threading.Thread.Sleep(interval); }
 
             }
+        }
+
+        public static void MouseClick(int interval = 0)
+        {
+
+            var pInputs = new[]{
+            new INPUT()
+             {
+            type = InputType.MOUSE,
+                        U = new InputUnion()
+                        {
+                            mi = new MOUSEINPUT()
+                            {
+                                dx = 0,
+                                dy = 0,
+                                mouseData = 0,
+                                time = GetTickCount(),
+                                dwFlags = MOUSEEVENTF.LEFTDOWN,
+                                dwExtraInfo = GetMessageExtraInfo()
+                            }
+                        }
+                    },
+                    new INPUT()
+            {
+            type = InputType.MOUSE,
+                        U = new InputUnion()
+                        {
+                            mi = new MOUSEINPUT()
+                            {
+                                dx = 0,
+                                dy = 0,
+                                mouseData = 0,
+                                time = GetTickCount(),
+                                dwFlags = MOUSEEVENTF.LEFTUP,
+                                dwExtraInfo = GetMessageExtraInfo()
+                            }
+                        }
+                 }
+            };
+
+
+              SendInput((uint)pInputs.Length, pInputs, INPUT.Size);
+            if (interval != 0) { System.Threading.Thread.Sleep(interval); }
+
+
         }
 
 
@@ -1282,7 +1270,7 @@ namespace PaiPaiAssistant
             }
         }
 
-        public static void SendString(string message, int interval = 0)
+        public static void KeyboardType(string message, int interval = 0)
         {
             for (int i = 0; i < message.Length; i++)
             {
@@ -1334,7 +1322,7 @@ namespace PaiPaiAssistant
                 GetWindowRect(hwnd, out rect);
                 ActivateWindow(nclass, ntitle);
 
-                MouseMoveToClick(dx + rect.Left, dy + rect.Top);
+                MouseMoveTo(dx + rect.Left, dy + rect.Top);
             }
 
 

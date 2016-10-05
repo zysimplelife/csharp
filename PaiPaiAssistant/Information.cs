@@ -190,17 +190,16 @@ namespace PaiPaiAssistant
         {
             while (true) {
 
-                //String price = ocrText(pWndIE, Configuration.GetPriceRect(false));
-                //
-                //SetTextCallback dp = new SetTextCallback(SetTbPrice);
-                //this.Invoke(dp, new object[] { price });
-                //
-                //
-                //String time = ocrText(pWndIE, Configuration.GetTimeRect(false));
-                //SetTextCallback dt = new SetTextCallback(SetTbTime);
-                //this.Invoke(dt, new object[] { time });
-                //
-                //Thread.Sleep(200);//让线程暂停  
+               String price = ocrText(pWndIE, Configuration.GetClientRect(Configuration.CONFIG_PRICE_RECT));
+               
+               SetTextCallback dp = new SetTextCallback(SetTbPrice);
+               this.Invoke(dp, new object[] { price });
+               
+               String time = ocrText(pWndIE, Configuration.GetClientRect(Configuration.CONFIG_TIME_RECT));
+               SetTextCallback dt = new SetTextCallback(SetTbTime);
+               this.Invoke(dt, new object[] { time });
+               
+               Thread.Sleep(200);//让线程暂停  
             }
         }
 
@@ -224,23 +223,16 @@ namespace PaiPaiAssistant
 
         private void plus700_Click(object sender, EventArgs e)
         {
-            WinInputHelpers.MouseMoveToClick(Configuration.GetClientPoint(Configuration.CONFIG_INC_IN_POINT,pWndIE));
+            WinInputHelpers.MouseMoveToDoubleClick(Configuration.GetScreenPoint(Configuration.CONFIG_INC_IN_POINT,pWndIE));
             
-            WinInputHelpers.SendString("700",100);
+            WinInputHelpers.KeyboardType("700",30);
 
-            WinInputHelpers.MouseMoveToClick(Configuration.GetClientPoint(Configuration.CONFIG_INC_BTN_POINT, pWndIE));
-            WinInputHelpers.MouseMoveToClick(Configuration.GetClientPoint(Configuration.CONFIG_INC_BTN_POINT, pWndIE));
+            WinInputHelpers.MouseMoveToClick(Configuration.GetScreenPoint(Configuration.CONFIG_INC_BTN_POINT, pWndIE));
 
-            WinInputHelpers.MouseMoveToClick(Configuration.GetClientPoint(Configuration.CONFIG_SUBMIT_BTN_POINT, pWndIE));
+            WinInputHelpers.MouseMoveToClick(Configuration.GetScreenPoint(Configuration.CONFIG_SUBMIT_BTN_POINT, pWndIE));
 
         }
 
-        private  Point screenPostion(Point p)
-        {
-            Rectangle rectIE = ScreenUtils.getWndRect(pWndIE);
-            p.X += rectIE.X;
-            p.X += rectIE.Y;
-            return p;
-        }
+      
     }
 }

@@ -38,30 +38,28 @@ namespace PaiPaiAssistant
             Rectangle rect;
 
             // Price
-          //rect = Configuration.GetPriceRect(false);
-          //toClient(ref rectIE, ref rect);
-          //dc.DrawRectangle(pen, rect);
-          //
-          //// Time
-          //rect = Configuration.GetTimeRect(false);
-          //toClient(ref rectIE, ref rect);
-          //dc.DrawRectangle(pen, rect);
+            rect = Configuration.GetScreenRect(Configuration.CONFIG_PRICE_RECT, pIEWnd);
+            dc.DrawRectangle(pen, rect);
+
+            // Time
+            rect = Configuration.GetScreenRect(Configuration.CONFIG_TIME_RECT, pIEWnd);
+            dc.DrawRectangle(pen, rect);
 
             // 加价
-            point = Configuration.GetClientPoint(Configuration.CONFIG_INC_IN_POINT, pIEWnd);
+            point = Configuration.GetScreenPoint(Configuration.CONFIG_INC_IN_POINT, pIEWnd);
             dc.FillRectangle(brush, point.X, point.Y,5,5);
 
             // 加价
-            point = Configuration.GetClientPoint(Configuration.CONFIG_INC_BTN_POINT, pIEWnd);
+            point = Configuration.GetScreenPoint(Configuration.CONFIG_INC_BTN_POINT, pIEWnd);
             dc.FillRectangle(brush, point.X, point.Y, 5, 5);
 
             // 出价
-            point = Configuration.GetClientPoint(Configuration.CONFIG_SUBMIT_IN_POINT, pIEWnd);
+            point = Configuration.GetScreenPoint(Configuration.CONFIG_SUBMIT_IN_POINT, pIEWnd);
             dc.FillRectangle(brush, point.X, point.Y, 5, 5);
 
 
             // 出价
-            point = Configuration.GetClientPoint(Configuration.CONFIG_SUBMIT_BTN_POINT, pIEWnd);
+            point = Configuration.GetScreenPoint(Configuration.CONFIG_SUBMIT_BTN_POINT, pIEWnd);
             dc.FillRectangle(brush, point.X, point.Y, 5, 5);
 
         }

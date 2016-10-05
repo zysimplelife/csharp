@@ -32,45 +32,53 @@ namespace PaiPaiAssistant
 
 
 
-        public static Point GetClientPoint(String key,IntPtr pWnd)
+        public static Point GetScreenPoint(String key,IntPtr pWnd)
         {
-             Point point = new Point();
+            Point point = GetClientPoint(key);
 
-            if (!pointMap.TryGetValue(key,out point))
-            {
-                point = getPoint(key);
-                pointMap.Add(key,point);
-            }
             Rectangle wndRect = ScreenUtils.getWndRect(pWnd);
 
             return new Point(point.X + wndRect.X, point.Y + wndRect.Y);
         }
 
-
-
-
-
-
-        public static Rectangle GetPriceRect()
+        public static Point GetClientPoint(string key)
         {
-            if(price.IsEmpty)
+            Point point = new Point();
+
+            if (!pointMap.TryGetValue(key, out point))
             {
-                price = getRect("postion.price");
+                point = getPoint(key);
+                pointMap.Add(key, point);
             }
-            return price;
+
+            return point;
         }
 
-        public static Rectangle GetTimeRect()
+        public static Rectangle GetClientRect(String key)
         {
-            if (time.IsEmpty)
+            Rectangle rect = new Rectangle();
+
+            if (!rectMap.TryGetValue(key, out rect))
             {
-                time = getRect("postion.time");
+                rect = getRect(key);
+                rectMap.Add(key, rect);
             }
-            return time;
+
+            return rect;
+            
+        }
+            
+        public static Rectangle GetScreenRect(String key, IntPtr pWnd)
+        {
+            Rectangle client = GetClientRect(key);
+            Rectangle wndRect = ScreenUtils.getWndRect(pWnd);
+            client.X += wndRect.X;
+            client.Y += wndRect.Y;
+            return client;
         }
 
-
-
+            
+ 
         private static Rectangle getRect(String configKey)
         {
             String start = ConfigurationManager.AppSettings[CONFIG_BASE_POINT];
