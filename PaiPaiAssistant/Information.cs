@@ -1,19 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Configuration;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
-using System.Drawing.Imaging;
 using System.Threading;
 using Tesseract;
-using System.Drawing.Drawing2D;
 
 namespace PaiPaiAssistant
 {
@@ -30,11 +22,21 @@ namespace PaiPaiAssistant
         private TesseractEngine engine;
         private PaintForm df;
         private Boolean isDfClosed = true;
-        private Thread ocrThread = null;
-        private Thread autoConfirmThread   = null;
+        private Thread threadOcr = null;
+        private Thread threadAutoConfirm   = null;
+        private Thread threadUpdateText = null;
 
 
+        //Runtime Informations
 
+        private Int32 currentPrice;
+        private Int32 targetPrice;
+        private String serverTime;
+        private String targetTime = "11:29:47";
+        private String forceConfirmTime = "11:29:56";
+
+        private Double remainTime;
+        private String delay;
 
         public Information()
         {
@@ -51,13 +53,19 @@ namespace PaiPaiAssistant
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
             base.OnFormClosing(e);
-            if (ocrThread != null)
+            closeThead(threadOcr);
+            closeThead(threadAutoConfirm);
+            closeThead(threadUpdateText);
+        }
+
+        private void closeThead(Thread thread)
+        {
+            if (thread != null)
             {
-                ocrThread.Abort();
+                thread.Abort();
             }
         }
 
-      
         private void btStart_Click(object sender, EventArgs e)
         {
             //Restart  IE相关
@@ -76,6 +84,15 @@ namespace PaiPaiAssistant
                 startIE();
                 setIEWnd();
             }
+
+            
+
+            threadUpdateText = new Thread(new ThreadStart(UpdateTextThread));
+            threadUpdateText.Start();
+
+            threadOcr = new Thread(new ThreadStart(this.ocrThread));
+            threadOcr.Start();
+
         }
 
         private void stopIE()
@@ -110,16 +127,25 @@ namespace PaiPaiAssistant
             }
         }
 
-       
+        private Int32 ocrInt(IntPtr pWndIE, Rectangle rect)
+        {
+            try
+            {
+                return Int32.Parse(ocrText(pWndIE, rect));
+            }
+            catch (Exception e)
+            {
+                return 0;
+            }
+        }
+
+
         private String ocrText(IntPtr pWndIE,Rectangle rect)
         {
             try
             {
                 Bitmap bmp = ScreenUtils.CaptureWindow(pWndIE, rect);
-
-               //String imgPath = postionCfg.Replace('.', '_') + ".bmp";
-               //
-               //bmp.Save(imgPath);
+                //bmp.Save(postionCfg.Replace('.', '_') + ".bmp);
 
                 using (var page = engine.Process(bmp, PageSegMode.SingleLine))
                 {
@@ -137,32 +163,21 @@ namespace PaiPaiAssistant
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.Message);
                 return "unrecorded";
-
             }
         }
 
         private void test_sceen_Click(object sender, EventArgs e)
         {
-            //ParameterRun(pWndIE, "postion.test");
-
-            //this.tbPrice.Text = ocrText(pWndIE, Configuration.GetPriceRect(false));
-            //this.tbtime.Text = ocrText(pWndIE, Configuration.GetTimeRect(false));
-            //ParameterRun(pWndIE, "postion.time");
-
-            if(ocrThread == null)
+            if(threadOcr == null)
             {
-                ocrThread = new Thread(new ThreadStart(this.PriceThread));
-                ocrThread.Start();
+                threadOcr = new Thread(new ThreadStart(this.ocrThread));
+                threadOcr.Start();
             }else
             {
-                ocrThread.Abort();
-                ocrThread = null;
+                threadOcr.Abort();
+                threadOcr = null;
             }
-
-            
-
 
         }
 
@@ -188,54 +203,63 @@ namespace PaiPaiAssistant
         /// <summary>  
         /// 不带参数的启动方法  
         /// </summary>  
-        public void PriceThread()
+        public void ocrThread()
         {
             while (true) {
 
-                String price = ocrText(pWndIE, Configuration.GetClientRect(Configuration.CONFIG_PRICE_RECT));
-                tbPrice.Invoke(new Action(() => tbPrice.Text = price));
+                currentPrice = ocrInt(pWndIE, Configuration.GetClientRect(Configuration.CONFIG_PRICE_RECT));
+                serverTime = ocrText(pWndIE, Configuration.GetClientRect(Configuration.CONFIG_TIME_RECT));
+                Thread.Sleep(200);//让线程暂停  
+            }
+        }
 
-
-                String time = ocrText(pWndIE, Configuration.GetClientRect(Configuration.CONFIG_TIME_RECT));
-                tbtime.Invoke(new Action(() => tbtime.Text = time));
+        public void UpdateTextThread()
+        {
+            while (true)
+            {
+                tbTime.Invoke(new Action(() => tbTime.Text = serverTime));
+                tbPrice.Invoke(new Action(() => tbPrice.Text = currentPrice.ToString()));
+                tbTargetPrice.Invoke(new Action(() => tbTargetPrice.Text = targetPrice.ToString()));
+                tbTargetTime.Invoke(new Action(() => tbTargetTime.Text = targetTime.ToString()));
+                tbRemainTime.Invoke(new Action(() => tbRemainTime.Text = remainTime.ToString()));
 
                 Thread.Sleep(200);//让线程暂停  
             }
         }
 
-      
-
 
         private void plus700_Click(object sender, EventArgs e)
         {
-            WinInputHelpers.MouseMoveToDoubleClick(Configuration.GetScreenPoint(Configuration.CONFIG_INC_IN_POINT,pWndIE));
             
-            WinInputHelpers.KeyboardType("700",30);
+            threadAutoConfirm = new Thread(new ThreadStart(this.AutoConfirmThread));
 
-            WinInputHelpers.MouseMoveToClick(Configuration.GetScreenPoint(Configuration.CONFIG_INC_BTN_POINT, pWndIE));
-
-            WinInputHelpers.MouseMoveToClick(Configuration.GetScreenPoint(Configuration.CONFIG_SUBMIT_BTN_POINT, pWndIE));
-
-            tb_target_price.Text = (Int32.Parse(tbPrice.Text) + 700).ToString();
-
-            autoConfirmThread = new Thread(new ThreadStart(this.AutoConfirmThread));
-
-            autoConfirmThread.Start();
+            threadAutoConfirm.Start();
 
         }
+
 
         /// <summary>  
         /// 不带参数的启动方法  
         /// </summary>  
         public void AutoConfirmThread()
         {
+            DateTime dtTargetTime = Convert.ToDateTime(targetTime);
+
+            while ((remainTime = (dtTargetTime - Convert.ToDateTime(serverTime)).TotalSeconds)>0)
+            {
+                Thread.Sleep(100);
+            }
+
+            // Click +700
+            clickAddSubmit(700);
+
             while (true)
             {
-                Int32 different = Int32.Parse(readControlText(tb_target_price)) - Int32.Parse(readControlText(tbPrice)) - 300;
+                Int32 different = targetPrice - currentPrice - 300;
                 tb_differences.Invoke(new Action(() => tb_differences.Text = different.ToString()));
 
 
-                if (different <= 100)
+                if (different <= 100 || Convert.ToDateTime(serverTime) >= Convert.ToDateTime(forceConfirmTime))
                 {
                     WinInputHelpers.MouseMoveToClick(Configuration.GetScreenPoint(Configuration.CONFIG_CONFIRM_BTN_POINT, pWndIE));
                     break;
@@ -243,6 +267,20 @@ namespace PaiPaiAssistant
 
                 Thread.Sleep(100);
             }
+        }
+
+        private void clickAddSubmit(Int32 addPrice)
+        {
+            WinInputHelpers.MouseMoveToDoubleClick(Configuration.GetScreenPoint(Configuration.CONFIG_INC_IN_POINT, pWndIE));
+
+            WinInputHelpers.KeyboardType(addPrice.ToString(), 30);
+
+            WinInputHelpers.MouseMoveToClick(Configuration.GetScreenPoint(Configuration.CONFIG_INC_BTN_POINT, pWndIE));
+
+            targetPrice = currentPrice + addPrice;
+
+            WinInputHelpers.MouseMoveToClick(Configuration.GetScreenPoint(Configuration.CONFIG_SUBMIT_BTN_POINT, pWndIE));
+
         }
 
         public string readControlText(Control varControl)

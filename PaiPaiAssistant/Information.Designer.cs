@@ -35,7 +35,7 @@
             this.lbPrice = new System.Windows.Forms.Label();
             this.tbPrice = new System.Windows.Forms.TextBox();
             this.lbtime = new System.Windows.Forms.Label();
-            this.tbtime = new System.Windows.Forms.TextBox();
+            this.tbTime = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.flowLayoutPanel2 = new System.Windows.Forms.FlowLayoutPanel();
             this.test_sceen = new System.Windows.Forms.Button();
@@ -44,10 +44,14 @@
             this.flowLayoutPanel3 = new System.Windows.Forms.FlowLayoutPanel();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.flowLayoutPanel4 = new System.Windows.Forms.FlowLayoutPanel();
-            this.target_price = new System.Windows.Forms.Label();
-            this.tb_target_price = new System.Windows.Forms.TextBox();
+            this.lbTargetPrice = new System.Windows.Forms.Label();
+            this.tbTargetPrice = new System.Windows.Forms.TextBox();
             this.remain_price = new System.Windows.Forms.Label();
             this.tb_differences = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.tbTargetTime = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.tbRemainTime = new System.Windows.Forms.TextBox();
             btStart = new System.Windows.Forms.Button();
             plus700 = new System.Windows.Forms.Button();
             this.gbRuntime.SuspendLayout();
@@ -97,7 +101,7 @@
             this.flowLayoutPanel1.Controls.Add(this.lbPrice);
             this.flowLayoutPanel1.Controls.Add(this.tbPrice);
             this.flowLayoutPanel1.Controls.Add(this.lbtime);
-            this.flowLayoutPanel1.Controls.Add(this.tbtime);
+            this.flowLayoutPanel1.Controls.Add(this.tbTime);
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flowLayoutPanel1.Location = new System.Drawing.Point(3, 17);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
@@ -132,13 +136,13 @@
             this.lbtime.TabIndex = 2;
             this.lbtime.Text = "当前时间";
             // 
-            // tbtime
+            // tbTime
             // 
-            this.tbtime.Dock = System.Windows.Forms.DockStyle.Top;
-            this.tbtime.Location = new System.Drawing.Point(62, 30);
-            this.tbtime.Name = "tbtime";
-            this.tbtime.Size = new System.Drawing.Size(129, 21);
-            this.tbtime.TabIndex = 3;
+            this.tbTime.Dock = System.Windows.Forms.DockStyle.Top;
+            this.tbTime.Location = new System.Drawing.Point(62, 30);
+            this.tbTime.Name = "tbTime";
+            this.tbTime.Size = new System.Drawing.Size(129, 21);
+            this.tbTime.TabIndex = 3;
             // 
             // groupBox1
             // 
@@ -209,40 +213,44 @@
             this.groupBox3.Location = new System.Drawing.Point(0, 81);
             this.groupBox3.Margin = new System.Windows.Forms.Padding(10);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(209, 81);
+            this.groupBox3.Size = new System.Drawing.Size(209, 130);
             this.groupBox3.TabIndex = 3;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "拍牌信息";
             // 
             // flowLayoutPanel4
             // 
-            this.flowLayoutPanel4.Controls.Add(this.target_price);
-            this.flowLayoutPanel4.Controls.Add(this.tb_target_price);
+            this.flowLayoutPanel4.Controls.Add(this.lbTargetPrice);
+            this.flowLayoutPanel4.Controls.Add(this.tbTargetPrice);
             this.flowLayoutPanel4.Controls.Add(this.remain_price);
             this.flowLayoutPanel4.Controls.Add(this.tb_differences);
+            this.flowLayoutPanel4.Controls.Add(this.label1);
+            this.flowLayoutPanel4.Controls.Add(this.tbTargetTime);
+            this.flowLayoutPanel4.Controls.Add(this.label2);
+            this.flowLayoutPanel4.Controls.Add(this.tbRemainTime);
             this.flowLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flowLayoutPanel4.Location = new System.Drawing.Point(3, 17);
             this.flowLayoutPanel4.Name = "flowLayoutPanel4";
-            this.flowLayoutPanel4.Size = new System.Drawing.Size(203, 61);
+            this.flowLayoutPanel4.Size = new System.Drawing.Size(203, 110);
             this.flowLayoutPanel4.TabIndex = 0;
             // 
-            // target_price
+            // lbTargetPrice
             // 
-            this.target_price.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.target_price.AutoSize = true;
-            this.target_price.Location = new System.Drawing.Point(3, 7);
-            this.target_price.Name = "target_price";
-            this.target_price.Size = new System.Drawing.Size(53, 12);
-            this.target_price.TabIndex = 0;
-            this.target_price.Text = "目标价格";
+            this.lbTargetPrice.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.lbTargetPrice.AutoSize = true;
+            this.lbTargetPrice.Location = new System.Drawing.Point(3, 7);
+            this.lbTargetPrice.Name = "lbTargetPrice";
+            this.lbTargetPrice.Size = new System.Drawing.Size(53, 12);
+            this.lbTargetPrice.TabIndex = 0;
+            this.lbTargetPrice.Text = "目标价格";
             // 
-            // tb_target_price
+            // tbTargetPrice
             // 
-            this.tb_target_price.Dock = System.Windows.Forms.DockStyle.Top;
-            this.tb_target_price.Location = new System.Drawing.Point(62, 3);
-            this.tb_target_price.Name = "tb_target_price";
-            this.tb_target_price.Size = new System.Drawing.Size(129, 21);
-            this.tb_target_price.TabIndex = 1;
+            this.tbTargetPrice.Dock = System.Windows.Forms.DockStyle.Top;
+            this.tbTargetPrice.Location = new System.Drawing.Point(62, 3);
+            this.tbTargetPrice.Name = "tbTargetPrice";
+            this.tbTargetPrice.Size = new System.Drawing.Size(129, 21);
+            this.tbTargetPrice.TabIndex = 1;
             // 
             // remain_price
             // 
@@ -261,6 +269,42 @@
             this.tb_differences.Name = "tb_differences";
             this.tb_differences.Size = new System.Drawing.Size(129, 21);
             this.tb_differences.TabIndex = 3;
+            // 
+            // label1
+            // 
+            this.label1.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(3, 61);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(53, 12);
+            this.label1.TabIndex = 4;
+            this.label1.Text = "目标时间";
+            // 
+            // tbTargetTime
+            // 
+            this.tbTargetTime.Dock = System.Windows.Forms.DockStyle.Top;
+            this.tbTargetTime.Location = new System.Drawing.Point(62, 57);
+            this.tbTargetTime.Name = "tbTargetTime";
+            this.tbTargetTime.Size = new System.Drawing.Size(129, 21);
+            this.tbTargetTime.TabIndex = 5;
+            // 
+            // label2
+            // 
+            this.label2.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(3, 88);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(53, 12);
+            this.label2.TabIndex = 6;
+            this.label2.Text = "剩余时间";
+            // 
+            // tbRemainTime
+            // 
+            this.tbRemainTime.Dock = System.Windows.Forms.DockStyle.Top;
+            this.tbRemainTime.Location = new System.Drawing.Point(62, 84);
+            this.tbRemainTime.Name = "tbRemainTime";
+            this.tbRemainTime.Size = new System.Drawing.Size(129, 21);
+            this.tbRemainTime.TabIndex = 7;
             // 
             // Information
             // 
@@ -294,7 +338,7 @@
         private System.Windows.Forms.Label lbPrice;
         private System.Windows.Forms.TextBox tbPrice;
         private System.Windows.Forms.Label lbtime;
-        private System.Windows.Forms.TextBox tbtime;
+        private System.Windows.Forms.TextBox tbTime;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel2;
         private System.Windows.Forms.Button test_sceen;
@@ -303,10 +347,14 @@
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel3;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel4;
-        private System.Windows.Forms.Label target_price;
-        private System.Windows.Forms.TextBox tb_target_price;
+        private System.Windows.Forms.Label lbTargetPrice;
+        private System.Windows.Forms.TextBox tbTargetPrice;
         private System.Windows.Forms.Label remain_price;
         private System.Windows.Forms.TextBox tb_differences;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TextBox tbTargetTime;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox tbRemainTime;
     }
 }
 
