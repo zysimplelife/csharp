@@ -230,6 +230,10 @@ namespace PaiPaiAssistant
 
         private void plus700_Click(object sender, EventArgs e)
         {
+            if (threadAutoConfirm != null && threadAutoConfirm.IsAlive)
+            {
+                return;
+            }
             
             threadAutoConfirm = new Thread(new ThreadStart(this.AutoConfirmThread));
 
@@ -255,11 +259,11 @@ namespace PaiPaiAssistant
 
             while (true)
             {
-                Int32 different = targetPrice - currentPrice - 300;
+                Int32 different = targetPrice - currentPrice;
                 tb_differences.Invoke(new Action(() => tb_differences.Text = different.ToString()));
 
 
-                if (different <= 100 || Convert.ToDateTime(serverTime) >= Convert.ToDateTime(forceConfirmTime))
+                if (different <= Configuration.BeforeTarget() || Convert.ToDateTime(serverTime) >= Convert.ToDateTime(forceConfirmTime))
                 {
                     WinInputHelpers.MouseMoveToClick(Configuration.GetScreenPoint(Configuration.CONFIG_CONFIRM_BTN_POINT, pWndIE));
                     break;

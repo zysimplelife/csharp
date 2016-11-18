@@ -33,8 +33,13 @@ namespace PaiPaiAssistant
         public static String CONFIG_VERIFICATION_REFESH_POINT = "position.verification.refresh";
         public static String CONFIG_CONFIRM_BTN_POINT = "position.confirm.button";
         public static String CONFIG_CANCEL_BTN_POINT = "position.cancel.button";
+        public static String CONFIG_BEFORE_TARGET   = "position.click.beforeTarget";
 
 
+        public static int BeforeTarget()
+        {
+            return Int32.Parse(ConfigurationManager.AppSettings[CONFIG_BEFORE_TARGET]);
+        }
 
 
         public static Point GetScreenPoint(String key,IntPtr pWnd)
