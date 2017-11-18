@@ -32,7 +32,8 @@ namespace PaiPaiAssistant
         private Int32 currentPrice;
         private Int32 targetPrice;
         private String serverTime;
-        private String targetTime = "11:29:47";
+        private String targetTime = "11:29:45";
+        private int increasePrice = 900;
         private String forceConfirmTime = "11:29:56";
 
         private Double remainTime;
@@ -72,18 +73,19 @@ namespace PaiPaiAssistant
             pWndIE = FindWindow("IEFrame", null);
             if (pWndIE != IntPtr.Zero)
             {
-                if (MessageBox.Show("检测到IE已经打开，是否重新启动？","确认" ,MessageBoxButtons.YesNo) == DialogResult.Yes)
-                {
-                    stopIE();
-                    startIE();
-                    setIEWnd();
-                }
+// if (MessageBox.Show("检测到IE已经打开，是否重新启动？","确认" ,MessageBoxButtons.YesNo) == DialogResult.Yes)
+// {
+//     stopIE();
+//     startIE();
+//     setIEWnd();
+// }
             }
             else
             {
                 startIE();
                 setIEWnd();
             }
+
 
             
 
@@ -222,7 +224,7 @@ namespace PaiPaiAssistant
                 tbTargetPrice.Invoke(new Action(() => tbTargetPrice.Text = targetPrice.ToString()));
                 tbTargetTime.Invoke(new Action(() => tbTargetTime.Text = targetTime.ToString()));
                 tbRemainTime.Invoke(new Action(() => tbRemainTime.Text = remainTime.ToString()));
-
+                labelStatus.Invoke(new Action(() => labelStatus.Text = isStarted().ToString()));
                 Thread.Sleep(200);//让线程暂停  
             }
         }
@@ -230,15 +232,20 @@ namespace PaiPaiAssistant
 
         private void plus700_Click(object sender, EventArgs e)
         {
-            if (threadAutoConfirm != null && threadAutoConfirm.IsAlive)
+            if (isStarted())
             {
                 return;
             }
-            
+
             threadAutoConfirm = new Thread(new ThreadStart(this.AutoConfirmThread));
 
             threadAutoConfirm.Start();
 
+        }
+
+        private bool isStarted()
+        {
+            return threadAutoConfirm != null && threadAutoConfirm.IsAlive;
         }
 
 
@@ -255,21 +262,28 @@ namespace PaiPaiAssistant
             }
 
             // Click +700
-            clickAddSubmit(700);
+            clickAddSubmit(increasePrice);
 
             while (true)
             {
                 Int32 different = targetPrice - currentPrice;
                 tb_differences.Invoke(new Action(() => tb_differences.Text = different.ToString()));
 
-
-                if (different <= Configuration.BeforeTarget() || Convert.ToDateTime(serverTime) >= Convert.ToDateTime(forceConfirmTime))
+                //当前价格小于差价 或者超过强制出价时间则出价
+                if (different <= Configuration.BeforeTarget())
                 {
+                    //差价100 等待100毫秒出价
+                    Thread.Sleep(100);
                     WinInputHelpers.MouseMoveToClick(Configuration.GetScreenPoint(Configuration.CONFIG_CONFIRM_BTN_POINT, pWndIE));
-                    break;
+                    threadAutoConfirm.Abort();
                 }
-
                 Thread.Sleep(100);
+
+                //暂时不强制时间出价
+                //Convert.ToDateTime(serverTime) >= Convert.ToDateTime(forceConfirmTime);
+
+
+
             }
         }
 

@@ -63,7 +63,7 @@ namespace PaiPaiAssistant
             dc.FillRectangle(brush, point.X, point.Y, 5, 5);
 
 
-            // 出价
+            // 取消
             point = Configuration.GetScreenPoint(Configuration.CONFIG_CANCEL_BTN_POINT, pIEWnd);
             dc.FillRectangle(brush, point.X, point.Y, 5, 5);
 

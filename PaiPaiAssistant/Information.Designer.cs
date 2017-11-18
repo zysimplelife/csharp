@@ -52,6 +52,7 @@
             this.tbTargetTime = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.tbRemainTime = new System.Windows.Forms.TextBox();
+            this.labelStatus = new System.Windows.Forms.Label();
             btStart = new System.Windows.Forms.Button();
             plus700 = new System.Windows.Forms.Button();
             this.gbRuntime.SuspendLayout();
@@ -306,11 +307,21 @@
             this.tbRemainTime.Size = new System.Drawing.Size(129, 21);
             this.tbRemainTime.TabIndex = 7;
             // 
+            // status
+            // 
+            this.labelStatus.AutoSize = true;
+            this.labelStatus.Location = new System.Drawing.Point(6, 237);
+            this.labelStatus.Name = "status";
+            this.labelStatus.Size = new System.Drawing.Size(41, 12);
+            this.labelStatus.TabIndex = 4;
+            this.labelStatus.Text = "status";
+            // 
             // Information
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(209, 423);
+            this.Controls.Add(this.labelStatus);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
@@ -328,6 +339,7 @@
             this.flowLayoutPanel4.ResumeLayout(false);
             this.flowLayoutPanel4.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -355,6 +367,7 @@
         private System.Windows.Forms.TextBox tbTargetTime;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox tbRemainTime;
+        private System.Windows.Forms.Label labelStatus;
     }
 }
 

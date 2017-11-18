@@ -148,7 +148,9 @@ namespace PaiPaiAssistant
             IntPtr hscrdc = GetWindowDC(hWnd);
 
             // 创建一个与指定设备兼容的内存设备上下文环境（DC）
+            // 这个是用来保存全屏幕
             IntPtr hmemdc = CreateCompatibleDC(hscrdc);
+            // 这个用来保存所需要的部分
             IntPtr myMemdc = CreateCompatibleDC(hscrdc);
 
             // 返回指定窗体的矩形尺寸
@@ -171,7 +173,8 @@ namespace PaiPaiAssistant
             //
             /////////////////////////////////////////////////////////////////////////////
 
-            // 直接打印窗体到画布
+
+            // 直接打印窗体到画布,后面会具体截取所需要的部分
             PrintWindow(hWnd, hmemdc, 0);
 
             // IntPtr hw = GetDesktopWindow();
@@ -185,6 +188,7 @@ namespace PaiPaiAssistant
             DeleteDC(hmemdc);
             DeleteDC(myMemdc);
 
+            //放大，以达到OCR需要的大小
             return ScaleByPercent(bmp, 200);
         }
 
