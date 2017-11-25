@@ -33,9 +33,11 @@ namespace PaiPaiAssistant
             Pen pen = new Pen(Color.Red, 1);
             Brush brush = (Brush)Brushes.Red;
 
-            Rectangle rectIE = ScreenUtils.getWndRect(pIEWnd);
+            Rectangle rectIE = ScreenUtils.getIETabWndRect(pIEWnd);
             Point point;
             Rectangle rect;
+
+            dc.DrawRectangle(pen, rectIE);
 
             // Price
             rect = Configuration.GetScreenRect(Configuration.CONFIG_PRICE_RECT, pIEWnd);

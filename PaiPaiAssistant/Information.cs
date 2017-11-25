@@ -6,24 +6,36 @@ using System.Runtime.InteropServices;
 using System.Diagnostics;
 using System.Threading;
 using Tesseract;
+using System.Text;
 
 namespace PaiPaiAssistant
 {
     public partial class Information : Form
     {
+        private static readonly log4net.ILog log =
+           log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         [DllImport("user32.dll", SetLastError = true)]
         static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+        static extern IntPtr FindWindowEx(IntPtr parentHandle, IntPtr childAfter, string lclassName, string windowTitle);
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        public static extern int GetWindowTextLength(HandleRef hWnd);
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        public static extern int GetWindowText(HandleRef hWnd, StringBuilder lpString, int nMaxCount);
+
 
         [DllImport("user32.dll", EntryPoint = "SendMessageA")]
         public static extern int SendMessage(IntPtr hwnd, int wMsg, IntPtr wParam, IntPtr lParam);
 
         private IntPtr pWndIE;
+        private IntPtr pWndTab;
+
         private TesseractEngine engine;
         private PaintForm df;
         private Boolean isDfClosed = true;
         private Thread threadOcr = null;
-        private Thread threadAutoConfirm   = null;
+        private Thread threadAutoConfirm = null;
         private Thread threadUpdateText = null;
 
 
@@ -67,28 +79,32 @@ namespace PaiPaiAssistant
             }
         }
 
-        private void btStart_Click(object sender, EventArgs e)
+        private void clickAttachIE(object sender, EventArgs e)
         {
             //Restart  IE相关
             pWndIE = FindWindow("IEFrame", null);
-            if (pWndIE != IntPtr.Zero)
+            if (pWndIE == IntPtr.Zero)
             {
-// if (MessageBox.Show("检测到IE已经打开，是否重新启动？","确认" ,MessageBoxButtons.YesNo) == DialogResult.Yes)
-// {
-//     stopIE();
-//     startIE();
-//     setIEWnd();
-// }
+                if (MessageBox.Show("是否重新启动IE？", "确认", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                {
+                    startIE();
+                    setIEWnd();
+                }
             }
             else
             {
-                startIE();
                 setIEWnd();
+                //获得窗口title
+                int capacity = GetWindowTextLength(new HandleRef(this, pWndTab)) * 2;
+                StringBuilder stringBuilder = new StringBuilder(capacity);
+                GetWindowText(new HandleRef(this, pWndTab), stringBuilder, stringBuilder.Capacity);
+                MessageBox.Show("关联IE窗口成功" + pWndTab + "title = " + stringBuilder.ToString());
             }
+        }
 
-
-            
-
+        private void btStart_Click(object sender, EventArgs e)
+        {
+           
             threadUpdateText = new Thread(new ThreadStart(UpdateTextThread));
             threadUpdateText.Start();
 
@@ -127,6 +143,17 @@ namespace PaiPaiAssistant
                 Thread.Sleep(1000);
                 pWndIE = FindWindow("IEFrame", null);
             }
+
+            pWndTab = FindWindowEx(pWndIE, IntPtr.Zero, "Frame Tab", null);
+            while (pWndIE == IntPtr.Zero)
+            {
+                Thread.Sleep(1000);
+                pWndTab = FindWindowEx(pWndIE, IntPtr.Zero, "Frame Tab", null);
+            }
+            pWndTab = FindWindowEx(pWndTab, IntPtr.Zero, "TabWindowClass", null);
+           pWndTab = FindWindowEx(pWndTab, IntPtr.Zero, "Shell DocObject View", null);
+           pWndTab = FindWindowEx(pWndTab, IntPtr.Zero, "Internet Explorer_Server", null);
+
         }
 
         private Int32 ocrInt(IntPtr pWndIE, Rectangle rect)
@@ -142,7 +169,7 @@ namespace PaiPaiAssistant
         }
 
 
-        private String ocrText(IntPtr pWndIE,Rectangle rect)
+        private String ocrText(IntPtr pWndIE, Rectangle rect)
         {
             try
             {
@@ -154,11 +181,11 @@ namespace PaiPaiAssistant
                     var text = page.GetText();
                     if (text != "")
                     {
-                       return text.Replace(" ", "");
+                        return text.Replace(" ", "");
                     }
                     else
                     {
-                       return "unrecorded";
+                        return "unrecorded";
                     }
 
                 }
@@ -171,15 +198,9 @@ namespace PaiPaiAssistant
 
         private void test_sceen_Click(object sender, EventArgs e)
         {
-            if(threadOcr == null)
-            {
-                threadOcr = new Thread(new ThreadStart(this.ocrThread));
-                threadOcr.Start();
-            }else
-            {
-                threadOcr.Abort();
-                threadOcr = null;
-            }
+            Bitmap bmp = ScreenUtils.CaptureWindow(pWndTab, ScreenUtils.getIETabWndRect(pWndTab));
+            bmp.Save("测试截图.bmp");
+            MessageBox.Show("测试截图文件已被保存");
 
         }
 
@@ -191,7 +212,8 @@ namespace PaiPaiAssistant
                 df = new PaintForm(pWndIE);//不穿透鼠标透明窗体
 
                 df.Show();//显示
-            }else
+            }
+            else
             {
                 df.Close();//显示
             }
@@ -200,17 +222,19 @@ namespace PaiPaiAssistant
 
         }
 
-       
-            
+
+
         /// <summary>  
         /// 不带参数的启动方法  
         /// </summary>  
         public void ocrThread()
         {
-            while (true) {
-
+            while (true)
+            {
+                //TODO： 最好用一次截屏得到两个结果
                 currentPrice = ocrInt(pWndIE, Configuration.GetClientRect(Configuration.CONFIG_PRICE_RECT));
                 serverTime = ocrText(pWndIE, Configuration.GetClientRect(Configuration.CONFIG_TIME_RECT));
+                log.Info("Got price is " + currentPrice + " time is " + serverTime);
                 Thread.Sleep(200);//让线程暂停  
             }
         }
@@ -256,7 +280,7 @@ namespace PaiPaiAssistant
         {
             DateTime dtTargetTime = Convert.ToDateTime(targetTime);
 
-            while ((remainTime = (dtTargetTime - Convert.ToDateTime(serverTime)).TotalSeconds)>0)
+            while ((remainTime = (dtTargetTime - Convert.ToDateTime(serverTime)).TotalSeconds) > 0)
             {
                 Thread.Sleep(100);
             }
@@ -316,5 +340,6 @@ namespace PaiPaiAssistant
             }
         }
 
+      
     }
 }

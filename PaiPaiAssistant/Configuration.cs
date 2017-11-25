@@ -46,7 +46,7 @@ namespace PaiPaiAssistant
         {
             Point point = GetClientPoint(key);
 
-            Rectangle wndRect = ScreenUtils.getWndRect(pWnd);
+            Rectangle wndRect = ScreenUtils.getIETabWndRect(pWnd);
 
             return new Point(point.X + wndRect.X, point.Y + wndRect.Y);
         }
@@ -81,7 +81,7 @@ namespace PaiPaiAssistant
         public static Rectangle GetScreenRect(String key, IntPtr pWnd)
         {
             Rectangle client = GetClientRect(key);
-            Rectangle wndRect = ScreenUtils.getWndRect(pWnd);
+            Rectangle wndRect = ScreenUtils.getIETabWndRect(pWnd);
             client.X += wndRect.X;
             client.Y += wndRect.Y;
             return client;

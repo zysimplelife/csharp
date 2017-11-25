@@ -30,6 +30,8 @@
         {
             System.Windows.Forms.Button btStart;
             System.Windows.Forms.Button plus700;
+            System.Windows.Forms.Button button1;
+            System.Windows.Forms.Button attachIE;
             this.gbRuntime = new System.Windows.Forms.GroupBox();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.lbPrice = new System.Windows.Forms.Label();
@@ -55,6 +57,8 @@
             this.labelStatus = new System.Windows.Forms.Label();
             btStart = new System.Windows.Forms.Button();
             plus700 = new System.Windows.Forms.Button();
+            button1 = new System.Windows.Forms.Button();
+            attachIE = new System.Windows.Forms.Button();
             this.gbRuntime.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -67,7 +71,7 @@
             // 
             // btStart
             // 
-            btStart.Location = new System.Drawing.Point(3, 3);
+            btStart.Location = new System.Drawing.Point(84, 3);
             btStart.Name = "btStart";
             btStart.Size = new System.Drawing.Size(75, 23);
             btStart.TabIndex = 0;
@@ -84,6 +88,25 @@
             plus700.Text = "+700 出价";
             plus700.UseVisualStyleBackColor = true;
             plus700.Click += new System.EventHandler(this.plus700_Click);
+            // 
+            // button1
+            // 
+            button1.Location = new System.Drawing.Point(3, 61);
+            button1.Name = "button1";
+            button1.Size = new System.Drawing.Size(75, 23);
+            button1.TabIndex = 3;
+            button1.Text = "启动";
+            button1.UseVisualStyleBackColor = true;
+            // 
+            // attachIE
+            // 
+            attachIE.Location = new System.Drawing.Point(3, 3);
+            attachIE.Name = "attachIE";
+            attachIE.Size = new System.Drawing.Size(75, 23);
+            attachIE.TabIndex = 3;
+            attachIE.Text = "关联IE";
+            attachIE.UseVisualStyleBackColor = true;
+            attachIE.Click += new System.EventHandler(this.clickAttachIE);
             // 
             // gbRuntime
             // 
@@ -158,9 +181,11 @@
             // 
             // flowLayoutPanel2
             // 
+            this.flowLayoutPanel2.Controls.Add(attachIE);
             this.flowLayoutPanel2.Controls.Add(btStart);
             this.flowLayoutPanel2.Controls.Add(this.test_sceen);
             this.flowLayoutPanel2.Controls.Add(this.btn_show_positions);
+            this.flowLayoutPanel2.Controls.Add(button1);
             this.flowLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flowLayoutPanel2.Location = new System.Drawing.Point(3, 17);
             this.flowLayoutPanel2.Name = "flowLayoutPanel2";
@@ -169,7 +194,7 @@
             // 
             // test_sceen
             // 
-            this.test_sceen.Location = new System.Drawing.Point(84, 3);
+            this.test_sceen.Location = new System.Drawing.Point(3, 32);
             this.test_sceen.Name = "test_sceen";
             this.test_sceen.Size = new System.Drawing.Size(75, 23);
             this.test_sceen.TabIndex = 1;
@@ -179,7 +204,7 @@
             // 
             // btn_show_positions
             // 
-            this.btn_show_positions.Location = new System.Drawing.Point(3, 32);
+            this.btn_show_positions.Location = new System.Drawing.Point(84, 32);
             this.btn_show_positions.Name = "btn_show_positions";
             this.btn_show_positions.Size = new System.Drawing.Size(75, 23);
             this.btn_show_positions.TabIndex = 2;
@@ -307,11 +332,11 @@
             this.tbRemainTime.Size = new System.Drawing.Size(129, 21);
             this.tbRemainTime.TabIndex = 7;
             // 
-            // status
+            // labelStatus
             // 
             this.labelStatus.AutoSize = true;
             this.labelStatus.Location = new System.Drawing.Point(6, 237);
-            this.labelStatus.Name = "status";
+            this.labelStatus.Name = "labelStatus";
             this.labelStatus.Size = new System.Drawing.Size(41, 12);
             this.labelStatus.TabIndex = 4;
             this.labelStatus.Text = "status";

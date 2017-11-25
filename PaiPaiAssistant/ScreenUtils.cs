@@ -30,9 +30,17 @@ namespace PaiPaiAssistant
         [DllImport("user32.dll")]
         private static extern IntPtr GetWindowRect(IntPtr hWnd, out RECT rect);
         [DllImport("user32.dll")]
+        private static extern IntPtr GetClientRect(IntPtr hWnd, out RECT rect);
+        [DllImport("user32.dll")]
         private static extern bool PrintWindow(IntPtr hwnd, IntPtr hdcBlt, UInt32 nFlags);
+
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+        static extern IntPtr FindWindowEx(IntPtr parentHandle, IntPtr childAfter, string lclassName, string windowTitle);
+
         [DllImport("user32.dll")]
         private static extern IntPtr GetDesktopWindow();
+        [DllImport("user32.dll")]
+        public static extern bool ClientToScreen(IntPtr hWnd, ref Point lpPoint);
 
         [DllImport("gdi32.dll")]
         private static extern IntPtr CreateDC(
@@ -154,7 +162,7 @@ namespace PaiPaiAssistant
             IntPtr myMemdc = CreateCompatibleDC(hscrdc);
 
             // 返回指定窗体的矩形尺寸
-            Rectangle rectWnd =  getWndRect(hWnd);
+            Rectangle rectWnd =  getIETabWndRect(hWnd);
 
             
 
@@ -175,7 +183,7 @@ namespace PaiPaiAssistant
 
 
             // 直接打印窗体到画布,后面会具体截取所需要的部分
-            PrintWindow(hWnd, hmemdc, 0);
+            PrintWindow(hWnd, hmemdc, 1);
 
             // IntPtr hw = GetDesktopWindow();
             // IntPtr hmemdcClone = GetWindowDC(myBitmap);
@@ -287,21 +295,32 @@ namespace PaiPaiAssistant
             return newBitmap;
         }
 
-        public static Rectangle getWndRect(IntPtr handler)
+      
+        /// <summary>
+        ///  因为IE的问题，希望只获得显示窗口部分的 rect
+        ///  这样就不用担心ie窗口设置的问题造成定位不准的问题
+        /// </summary>
+        /// <param name="hWnd"></param>
+        /// <returns></returns>
+        public static Rectangle getIETabWndRect(IntPtr hWnd)
         {
             RECT rect = new RECT();
+            Point point = new Point(0, 0);
 
-            GetWindowRect(handler, out rect);
-            return fromRECT(rect);
+            //  if (hWnd != IntPtr.Zero)
+            //  {
+            //      hWnd = FindWindowEx(hWnd, IntPtr.Zero, "XYZ_Renderer", String.Empty);
+            //      // and so on... 
+            //  }
+
+            ClientToScreen(hWnd, ref point);
+            GetClientRect(hWnd, out rect);
+            //return new Rectangle(point.X, point.Y, rect.Right - rect.Left, rect.Bottom - rect.Top);
+            return new Rectangle(0,0,rect.Right - rect.Left, rect.Bottom - rect.Top);
+
         }
 
-        public static Rectangle fromRECT(RECT rect)
-        {
-            return new Rectangle(rect.Left, rect.Top, rect.Right - rect.Left, rect.Bottom - rect.Top);
-
-        }
-
-
+       
 
     }
 
