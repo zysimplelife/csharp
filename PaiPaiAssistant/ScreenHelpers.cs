@@ -17,7 +17,7 @@ namespace PaiPaiAssistant
         public int Bottom; //最下坐标
     }
 
-    class ScreenUtils
+    class ScreenHelpers
     {
         [DllImport("user32.dll")]
         public static extern IntPtr GetDC(IntPtr hwnd);
@@ -33,14 +33,17 @@ namespace PaiPaiAssistant
         public static extern IntPtr GetClientRect(IntPtr hWnd, out RECT rect);
         [DllImport("user32.dll")]
         public static extern bool PrintWindow(IntPtr hwnd, IntPtr hdcBlt, UInt32 nFlags);
-
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
         public static extern IntPtr FindWindowEx(IntPtr parentHandle, IntPtr childAfter, string lclassName, string windowTitle);
-
         [DllImport("user32.dll")]
         private static extern IntPtr GetDesktopWindow();
         [DllImport("user32.dll")]
         public static extern bool ClientToScreen(IntPtr hWnd, ref Point lpPoint);
+        [DllImport("user32.dll")]
+        public static extern int GetWindowTextLength(IntPtr hWnd);
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        public static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
+
 
         [DllImport("gdi32.dll")]
         private static extern IntPtr CreateDC(
@@ -101,7 +104,6 @@ namespace PaiPaiAssistant
                 g.CopyFromScreen(new Point(x, y), new Point(0, 0), bmp.Size);
                 g.Dispose();
             }
-            //bit.Save(@"capture2.png");
             return bmp;
         }
 
@@ -138,11 +140,58 @@ namespace PaiPaiAssistant
         /// </summary>
         /// <param name="handle">窗口句柄. (在windows应用程序中, 从Handle属性获得)</param>
         /// <returns></returns>
+      //public static Bitmap CaptureWindow(IntPtr hWnd)
+      //{
+      //    IntPtr hscrdc = GetWindowDC(hWnd);
+      //    return CaptureWindow(hWnd, new Rectangle());
+      //}
+
+        /// <summary>
+        /// 截取给定窗口
+        /// </summary>
+        /// <param name="hWnd"></param>
+        /// <returns></returns>
         public static Bitmap CaptureWindow(IntPtr hWnd)
         {
+            // 获取设备上下文环境句柄
             IntPtr hscrdc = GetWindowDC(hWnd);
-            return CaptureWindow(hWnd, new Rectangle());
+
+            // 创建一个与指定设备兼容的内存设备上下文环境（DC）
+            // 这个是用来保存全屏幕
+            IntPtr hmemdc = CreateCompatibleDC(hscrdc);
+
+            // 返回指定窗体的矩形尺寸
+            Rectangle rectWnd = getWndRect(hWnd);
+
+            // 返回指定设备环境句柄对应的位图区域句柄
+            IntPtr hbitmap = CreateCompatibleBitmap(hscrdc, rectWnd.Width, rectWnd.Height);
+
+            //将 hbitmap 作为画图的场所
+            SelectObject(hmemdc, hbitmap);
+
+            // 将目标窗口的写到 hmemdc中，也就是将屏幕中的东西写到内存中。 现在这个内存是 hbitmap
+            PrintWindow(hWnd, hmemdc, 1);
+            //还有一种方法是bitblt但是当窗口被遮挡，就会有问题
+            //BitBlt(myMemdc, 0, 0, rect.Width, rect.Height, hmemdc, rect.X, rect.Y, CopyPixelOperation.SourceCopy | CopyPixelOperation.CaptureBlt);
+        
+
+            Bitmap bmp = Bitmap.FromHbitmap(hbitmap);
+            DeleteDC(hscrdc);
+            DeleteDC(hmemdc);
+
+            return bmp;
+
         }
+
+        public static String GetWindowTitle(IntPtr hWnd)
+        {
+            int capacity = GetWindowTextLength(hWnd) * 2;
+            StringBuilder stringBuilder = new StringBuilder(capacity);
+            GetWindowText(hWnd, stringBuilder, stringBuilder.Capacity);
+            return stringBuilder.ToString();
+        }
+
+
 
         /// <summary>
         /// 指定窗口区域截图
@@ -152,52 +201,12 @@ namespace PaiPaiAssistant
         /// <returns></returns>
         public static Bitmap CaptureWindow(IntPtr hWnd,Rectangle rect)
         {
-            // 获取设备上下文环境句柄
-            IntPtr hscrdc = GetWindowDC(hWnd);
 
-            // 创建一个与指定设备兼容的内存设备上下文环境（DC）
-            // 这个是用来保存全屏幕
-            IntPtr hmemdc = CreateCompatibleDC(hscrdc);
-            // 这个用来保存所需要的部分
-            IntPtr myMemdc = CreateCompatibleDC(hscrdc);
-
-            // 返回指定窗体的矩形尺寸
-            Rectangle rectWnd =  getIETabWndRect(hWnd);
-
-            
-
-            // 返回指定设备环境句柄对应的位图区域句柄
-            IntPtr hbitmap = CreateCompatibleBitmap(hscrdc, rectWnd.Width, rectWnd.Height);
-            IntPtr myBitmap = CreateCompatibleBitmap(hscrdc, rect.Width, rect.Height);
-
-            //把位图选进内存DC 
-            // IntPtr OldBitmap = (IntPtr)SelectObject(hmemdc, hbitmap);
-            SelectObject(hmemdc, hbitmap);
-            SelectObject(myMemdc, myBitmap);
-
-            /////////////////////////////////////////////////////////////////////////////
-            //
-            // 下面开始所谓的作画过程，此过程可以用的方法很多，看你怎么调用 API 了
-            //
-            /////////////////////////////////////////////////////////////////////////////
-
-
-            // 直接打印窗体到画布,后面会具体截取所需要的部分
-            PrintWindow(hWnd, hmemdc, 1);
-
-            // IntPtr hw = GetDesktopWindow();
-            // IntPtr hmemdcClone = GetWindowDC(myBitmap);
-
-            BitBlt(myMemdc, 0, 0, rect.Width, rect.Height, hmemdc, rect.X, rect.Y, CopyPixelOperation.SourceCopy | CopyPixelOperation.CaptureBlt);
-            //SelectObject(myMemdc, myBitmap);
-
-            Bitmap bmp = Bitmap.FromHbitmap(myBitmap);
-            DeleteDC(hscrdc);
-            DeleteDC(hmemdc);
-            DeleteDC(myMemdc);
-
+            Bitmap bmp = CaptureWindow(hWnd);
+            bmp = BitMapHelpers.cropImage(bmp, rect);
             //放大，以达到OCR需要的大小
-            return ScaleByPercent(bmp, 200);
+            var scaled = BitMapHelpers.ScaleByPercent(bmp, 200);
+            return BitMapHelpers.MakeGrayscale3(scaled);
         }
 
         /// <summary>
@@ -223,86 +232,13 @@ namespace PaiPaiAssistant
             img.Save(filename, format);
         }
 
-        
-        public static Bitmap ScaleByPercent(Bitmap imgPhoto, int Percent)
-        {
-            float nPercent = ((float)Percent / 100);
 
-            int sourceWidth = imgPhoto.Width;
-            int sourceHeight = imgPhoto.Height;
-            var destWidth = (int)(sourceWidth * nPercent);
-            var destHeight = (int)(sourceHeight * nPercent);
-
-            var bmPhoto = new Bitmap(destWidth, destHeight,
-                                     PixelFormat.Format24bppRgb);
-            bmPhoto.SetResolution(imgPhoto.HorizontalResolution,
-                                  imgPhoto.VerticalResolution);
-
-            Graphics grPhoto = Graphics.FromImage(bmPhoto);
-            grPhoto.CompositingMode = CompositingMode.SourceCopy;
-            grPhoto.PixelOffsetMode = PixelOffsetMode.Half;
-            grPhoto.InterpolationMode = InterpolationMode.NearestNeighbor;
-
-            // Draw your image here.
-
-            grPhoto.InterpolationMode = InterpolationMode.HighQualityBicubic;
-
-
-            grPhoto.DrawImage(imgPhoto,
-                              new Rectangle(0, 0, destWidth, destHeight),
-                              new Rectangle(0, 0, sourceWidth , sourceHeight ),
-                              GraphicsUnit.Pixel);
-            grPhoto.Dispose();
-            imgPhoto.Save("before.bmp");
-            bmPhoto.Save("scaled.bmp");
-
-            return MakeGrayscale3(bmPhoto);
-            //return bmPhoto;
-        }
-
-        public static Bitmap MakeGrayscale3(Bitmap original)
-        {
-            //create a blank bitmap the same size as original
-            Bitmap newBitmap = new Bitmap(original.Width, original.Height);
-
-            //get a graphics object from the new image
-            Graphics g = Graphics.FromImage(newBitmap);
-
-            //create the grayscale ColorMatrix
-            ColorMatrix colorMatrix = new ColorMatrix(
-               new float[][]
-               {
-                 new float[] {.3f, .3f, .3f, 0, 0},
-                 new float[] {.59f, .59f, .59f, 0, 0},
-                 new float[] {.11f, .11f, .11f, 0, 0},
-                 new float[] {0, 0, 0, 1, 0},
-                 new float[] {0, 0, 0, 0, 1}
-               });
-
-            //create some image attributes
-            ImageAttributes attributes = new ImageAttributes();
-
-            //set the color matrix attribute
-            attributes.SetColorMatrix(colorMatrix);
-
-            //draw the original image on the new image
-            //using the grayscale color matrix
-            g.DrawImage(original, new Rectangle(0, 0, original.Width, original.Height),
-               0, 0, original.Width, original.Height, GraphicsUnit.Pixel, attributes);
-
-            //dispose the Graphics object
-            g.Dispose();
-            return newBitmap;
-        }
-
-      
         /// <summary>
-        ///  因为IE的问题，希望只获得显示窗口部分的 rect
-        ///  这样就不用担心ie窗口设置的问题造成定位不准的问题
+        ///  获取制定wnd的 Rectangle 返回值
         /// </summary>
         /// <param name="hWnd"></param>
         /// <returns></returns>
-        public static Rectangle getIETabWndRect(IntPtr hWnd)
+        private static Rectangle getWndRect(IntPtr hWnd)
         {
             RECT rect = new RECT();
             //Point point = new Point(0, 0);
@@ -320,12 +256,9 @@ namespace PaiPaiAssistant
             Point point = new Point(0, 0);
             ClientToScreen(hWnd, ref point);
             GetClientRect(hWnd, out rect);
-            //return new Rectangle(point.X, point.Y, rect.Right - rect.Left, rect.Bottom - rect.Top);
             return new Rectangle(point.X, point.Y, rect.Right - rect.Left, rect.Bottom - rect.Top);
 
         }
-
-
 
     }
 

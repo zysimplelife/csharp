@@ -19,12 +19,6 @@ namespace PaiPaiAssistant
         static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
         static extern IntPtr FindWindowEx(IntPtr parentHandle, IntPtr childAfter, string lclassName, string windowTitle);
-        [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        public static extern int GetWindowTextLength(HandleRef hWnd);
-        [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        public static extern int GetWindowText(HandleRef hWnd, StringBuilder lpString, int nMaxCount);
-
-
         [DllImport("user32.dll", EntryPoint = "SendMessageA")]
         public static extern int SendMessage(IntPtr hwnd, int wMsg, IntPtr wParam, IntPtr lParam);
 
@@ -81,7 +75,6 @@ namespace PaiPaiAssistant
 
         private void clickAttachIE(object sender, EventArgs e)
         {
-            //Restart  IE相关
             pWndIE = FindWindow("IEFrame", null);
             if (pWndIE == IntPtr.Zero)
             {
@@ -95,15 +88,17 @@ namespace PaiPaiAssistant
             {
                 setIEWnd();
                 //获得窗口title
-                int capacity = GetWindowTextLength(new HandleRef(this, pWndTab)) * 2;
-                StringBuilder stringBuilder = new StringBuilder(capacity);
-                GetWindowText(new HandleRef(this, pWndTab), stringBuilder, stringBuilder.Capacity);
-                MessageBox.Show("关联IE窗口成功" + pWndTab + "title = " + stringBuilder.ToString());
+                MessageBox.Show("关联IE窗口成功 title = " + ScreenHelpers.GetWindowTitle(pWndIE));
             }
         }
 
         private void btStart_Click(object sender, EventArgs e)
         {
+            if (pWndIE == IntPtr.Zero)
+            {
+                MessageBox.Show("请先关联IE？");
+                return;
+            }
 
             threadUpdateText = new Thread(new ThreadStart(UpdateTextThread));
             threadUpdateText.Start();
@@ -111,6 +106,7 @@ namespace PaiPaiAssistant
             threadOcr = new Thread(new ThreadStart(this.ocrThread));
             threadOcr.Start();
 
+            btStart.Text = btStart.Text.Equals("启动") ? "停止" : "启动";
         }
 
         private void stopIE()
@@ -173,9 +169,7 @@ namespace PaiPaiAssistant
         {
             try
             {
-                Bitmap bmp = ScreenUtils.CaptureWindow(pWndIE, rect);
-                //bmp.Save(postionCfg.Replace('.', '_') + ".bmp);
-
+                Bitmap bmp = ScreenHelpers.CaptureWindow(pWndIE, rect);
                 using (var page = engine.Process(bmp, PageSegMode.SingleLine))
                 {
                     var text = page.GetText();
@@ -198,7 +192,7 @@ namespace PaiPaiAssistant
 
         private void test_sceen_Click(object sender, EventArgs e)
         {
-            Bitmap bmp = ScreenUtils.CaptureWindow(pWndTab, ScreenUtils.getIETabWndRect(pWndTab));
+            Bitmap bmp = ScreenHelpers.CaptureWindow(pWndTab);
             bmp.Save("测试截图.bmp");
             MessageBox.Show("测试截图文件已被保存");
 
@@ -229,7 +223,7 @@ namespace PaiPaiAssistant
         /// </summary>  
         public void ocrThread()
         {
-            while (true)
+            while (!btStart.Text.Equals("启动"))
             {
                 //TODO： 最好用一次截屏得到两个结果
                 currentPrice = ocrInt(pWndTab, Configuration.getRectangleFromConfig(Configuration.CONFIG_PRICE_RECT));
@@ -241,7 +235,7 @@ namespace PaiPaiAssistant
 
         public void UpdateTextThread()
         {
-            while (true)
+            while (!btStart.Text.Equals("启动"))
             {
                 tbTime.Invoke(new Action(() => tbTime.Text = serverTime));
                 tbPrice.Invoke(new Action(() => tbPrice.Text = currentPrice.ToString()));
@@ -249,7 +243,9 @@ namespace PaiPaiAssistant
                 tbTargetTime.Invoke(new Action(() => tbTargetTime.Text = targetTime.ToString()));
                 tbRemainTime.Invoke(new Action(() => tbRemainTime.Text = remainTime.ToString()));
                 labelStatus.Invoke(new Action(() => labelStatus.Text = isStarted().ToString()));
+                //利用窗口的名称来退出线程，不知道好不好         
                 Thread.Sleep(200);//让线程暂停  
+
             }
         }
 
@@ -278,9 +274,8 @@ namespace PaiPaiAssistant
         /// </summary>  
         public void AutoConfirmThread()
         {
-            DateTime dtTargetTime = Convert.ToDateTime(targetTime);
-
-            while ((remainTime = (dtTargetTime - Convert.ToDateTime(serverTime)).TotalSeconds) > 0)
+            // wait until time to input price
+            while (!isTimeToImputPrice())
             {
                 Thread.Sleep(100);
             }
@@ -298,30 +293,45 @@ namespace PaiPaiAssistant
                 {
                     //差价100 等待100毫秒出价
                     Thread.Sleep(100);
-                    WinInputHelpers.MouseMoveToClick(Configuration.GetScreenPoint(Configuration.CONFIG_CONFIRM_BTN_POINT, pWndIE));
-                    threadAutoConfirm.Abort();
+                    WinInputHelpers.MouseMoveToClick(Configuration.GetScreenPoint(Configuration.CONFIG_CONFIRM_BTN_POINT, pWndTab));
+                    Thread.Sleep(100);
+                    break;
                 }
                 Thread.Sleep(100);
 
                 //暂时不强制时间出价
                 //Convert.ToDateTime(serverTime) >= Convert.ToDateTime(forceConfirmTime);
+            }
+        }
 
-
-
+        private bool isTimeToImputPrice()
+        {
+            try
+            {
+                DateTime dtTargetTime = Convert.ToDateTime(targetTime);
+                DateTime dtServerTime = Convert.ToDateTime(serverTime);
+                //这里必须要保留，这样才可以在界面上显示出来
+                this.remainTime = (dtTargetTime - dtServerTime).TotalSeconds;
+                return remainTime <= 0;
+            }
+            catch (Exception e)
+            {
+                log.Error("Failed to check server time");
+                return false;
             }
         }
 
         private void clickAddSubmit(Int32 addPrice)
         {
-            WinInputHelpers.MouseMoveToDoubleClick(Configuration.GetScreenPoint(Configuration.CONFIG_INC_IN_POINT, pWndIE));
+            WinInputHelpers.MouseMoveToDoubleClick(Configuration.GetScreenPoint(Configuration.CONFIG_INC_IN_POINT, pWndTab));
 
             WinInputHelpers.KeyboardType(addPrice.ToString(), 30);
 
-            WinInputHelpers.MouseMoveToClick(Configuration.GetScreenPoint(Configuration.CONFIG_INC_BTN_POINT, pWndIE));
+            WinInputHelpers.MouseMoveToClick(Configuration.GetScreenPoint(Configuration.CONFIG_INC_BTN_POINT, pWndTab));
 
             targetPrice = currentPrice + addPrice;
 
-            WinInputHelpers.MouseMoveToClick(Configuration.GetScreenPoint(Configuration.CONFIG_SUBMIT_BTN_POINT, pWndIE));
+            WinInputHelpers.MouseMoveToClick(Configuration.GetScreenPoint(Configuration.CONFIG_SUBMIT_BTN_POINT, pWndTab));
 
         }
 

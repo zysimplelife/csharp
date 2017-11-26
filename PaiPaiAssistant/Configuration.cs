@@ -10,14 +10,6 @@ namespace PaiPaiAssistant
 {
     class Configuration
     {
-        private static Rectangle price;
-        private static Rectangle time;
-        private static Point increase_button;
-        private static Point increase_input;
-
-        private static Point submit_button;
-        private static Point submit_input;
-
         private static Dictionary<String, Point> pointMap = new Dictionary<string, Point>();
         private static Dictionary<String, Rectangle> rectMap = new Dictionary<string, Rectangle>();
 
@@ -33,7 +25,10 @@ namespace PaiPaiAssistant
         public static String CONFIG_CANCEL_BTN_POINT = "position.cancel.button";
         public static String CONFIG_BEFORE_TARGET = "position.click.beforeTarget";
 
-
+        /// <summary>
+        /// 提前多少出价
+        /// </summary>
+        /// <returns></returns>
         public static int BeforeTarget()
         {
             return Int32.Parse(ConfigurationManager.AppSettings[CONFIG_BEFORE_TARGET]);
@@ -42,45 +37,43 @@ namespace PaiPaiAssistant
 
         public static Point GetScreenPoint(String key, IntPtr pWnd)
         {
-            Point point = GetClientPoint(key);
+            Point point = getPointFromConfig(key);
 
-            Rectangle wndRect = ScreenUtils.getClientRect(pWnd);
+            Rectangle wndRect = ScreenHelpers.getClientRect(pWnd);
 
             return new Point(point.X + wndRect.X, point.Y + wndRect.Y);
         }
 
-        public static Point GetClientPoint(string key)
+        private static Point getPointFromConfig(string key)
         {
             Point point = new Point();
-
+            // 从缓存中获取
             if (!pointMap.TryGetValue(key, out point))
             {
                 point = getPoint(key);
                 pointMap.Add(key, point);
             }
-
             return point;
         }
 
         public static Rectangle getRectangleFromConfig(String key)
         {
             Rectangle rect = new Rectangle();
-
+            // 从缓存中获取
             if (!rectMap.TryGetValue(key, out rect))
             {
-                rect = getRect(key);
-                rectMap.Add(key, rect);
+                rectMap.Add(key, getRect(key));
             }
-
             return rect;
 
         }
 
+        
         public static Rectangle GetScreenRect(String key, IntPtr pWnd)
         {
             Rectangle rect = getRectangleFromConfig(key);
             Point point = new Point(0, 0);
-            ScreenUtils.ClientToScreen(pWnd, ref point);
+            ScreenHelpers.ClientToScreen(pWnd, ref point);
             rect.X += point.X;
             rect.Y += point.Y;
             return rect;

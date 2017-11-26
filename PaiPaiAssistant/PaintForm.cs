@@ -33,17 +33,17 @@ namespace PaiPaiAssistant
             Pen pen = new Pen(Color.Red, 1);
             Brush brush = (Brush)Brushes.Red;
 
-            Rectangle rectIE = ScreenUtils.getClientRect(pWnd);
+            Rectangle rectIE = ScreenHelpers.getClientRect(pWnd);
             Point point;
             Rectangle rect;
 
             dc.DrawRectangle(pen, rectIE);
 
-            // Price
+            // 价格
             rect = Configuration.GetScreenRect(Configuration.CONFIG_PRICE_RECT, pWnd);
             dc.DrawRectangle(pen, rect);
 
-            // Time
+            // 时间
             rect = Configuration.GetScreenRect(Configuration.CONFIG_TIME_RECT, pWnd);
             dc.DrawRectangle(pen, rect);
 
@@ -51,7 +51,7 @@ namespace PaiPaiAssistant
             point = Configuration.GetScreenPoint(Configuration.CONFIG_INC_IN_POINT, pWnd);
             dc.FillRectangle(brush, point.X, point.Y,5,5);
 
-            // 加价
+            // 加价确认
             point = Configuration.GetScreenPoint(Configuration.CONFIG_INC_BTN_POINT, pWnd);
             dc.FillRectangle(brush, point.X, point.Y, 5, 5);
 

@@ -28,10 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.Button btStart;
-            System.Windows.Forms.Button plus700;
-            System.Windows.Forms.Button button1;
-            System.Windows.Forms.Button attachIE;
+            
             this.gbRuntime = new System.Windows.Forms.GroupBox();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.lbPrice = new System.Windows.Forms.Label();
@@ -55,10 +52,10 @@
             this.label2 = new System.Windows.Forms.Label();
             this.tbRemainTime = new System.Windows.Forms.TextBox();
             this.labelStatus = new System.Windows.Forms.Label();
-            btStart = new System.Windows.Forms.Button();
-            plus700 = new System.Windows.Forms.Button();
-            button1 = new System.Windows.Forms.Button();
-            attachIE = new System.Windows.Forms.Button();
+            this.btStart = new System.Windows.Forms.Button();
+            this.plus700 = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
+            this.attachIE = new System.Windows.Forms.Button();
             this.gbRuntime.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -393,6 +390,10 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox tbRemainTime;
         private System.Windows.Forms.Label labelStatus;
+        private System.Windows.Forms.Button btStart;
+        private System.Windows.Forms.Button plus700;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button attachIE;
     }
 }
 
