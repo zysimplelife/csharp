@@ -12,13 +12,13 @@ namespace PaiPaiAssistant
 {
     public partial class PaintForm : Form
     {
-        private IntPtr pIEWnd;
+        private IntPtr pWnd;
 
-        public PaintForm(IntPtr pIEWnd)
+        public PaintForm(IntPtr pWnd)
         {
             InitializeComponent();
 
-            this.pIEWnd = pIEWnd;
+            this.pWnd = pWnd;
 
         }
 
@@ -33,40 +33,40 @@ namespace PaiPaiAssistant
             Pen pen = new Pen(Color.Red, 1);
             Brush brush = (Brush)Brushes.Red;
 
-            Rectangle rectIE = ScreenUtils.getIETabWndRect(pIEWnd);
+            Rectangle rectIE = ScreenUtils.getClientRect(pWnd);
             Point point;
             Rectangle rect;
 
             dc.DrawRectangle(pen, rectIE);
 
             // Price
-            rect = Configuration.GetScreenRect(Configuration.CONFIG_PRICE_RECT, pIEWnd);
+            rect = Configuration.GetScreenRect(Configuration.CONFIG_PRICE_RECT, pWnd);
             dc.DrawRectangle(pen, rect);
 
             // Time
-            rect = Configuration.GetScreenRect(Configuration.CONFIG_TIME_RECT, pIEWnd);
+            rect = Configuration.GetScreenRect(Configuration.CONFIG_TIME_RECT, pWnd);
             dc.DrawRectangle(pen, rect);
 
             // 加价
-            point = Configuration.GetScreenPoint(Configuration.CONFIG_INC_IN_POINT, pIEWnd);
+            point = Configuration.GetScreenPoint(Configuration.CONFIG_INC_IN_POINT, pWnd);
             dc.FillRectangle(brush, point.X, point.Y,5,5);
 
             // 加价
-            point = Configuration.GetScreenPoint(Configuration.CONFIG_INC_BTN_POINT, pIEWnd);
+            point = Configuration.GetScreenPoint(Configuration.CONFIG_INC_BTN_POINT, pWnd);
             dc.FillRectangle(brush, point.X, point.Y, 5, 5);
 
             // 出价
-            point = Configuration.GetScreenPoint(Configuration.CONFIG_SUBMIT_IN_POINT, pIEWnd);
+            point = Configuration.GetScreenPoint(Configuration.CONFIG_SUBMIT_BTN_POINT, pWnd);
             dc.FillRectangle(brush, point.X, point.Y, 5, 5);
 
 
-            // 出价
-            point = Configuration.GetScreenPoint(Configuration.CONFIG_CONFIRM_BTN_POINT, pIEWnd);
+            // 确认
+            point = Configuration.GetScreenPoint(Configuration.CONFIG_CONFIRM_BTN_POINT, pWnd);
             dc.FillRectangle(brush, point.X, point.Y, 5, 5);
 
 
             // 取消
-            point = Configuration.GetScreenPoint(Configuration.CONFIG_CANCEL_BTN_POINT, pIEWnd);
+            point = Configuration.GetScreenPoint(Configuration.CONFIG_CANCEL_BTN_POINT, pWnd);
             dc.FillRectangle(brush, point.X, point.Y, 5, 5);
 
         }

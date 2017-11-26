@@ -20,22 +20,22 @@ namespace PaiPaiAssistant
     class ScreenUtils
     {
         [DllImport("user32.dll")]
-        private static extern IntPtr GetDC(IntPtr hwnd);
+        public static extern IntPtr GetDC(IntPtr hwnd);
         [DllImport("user32.dll")]
-        private static extern IntPtr ReleaseDC(IntPtr hc, IntPtr hDest);
+        public static extern IntPtr ReleaseDC(IntPtr hc, IntPtr hDest);
         [DllImport("user32.dll")]
-        private static extern IntPtr GetWindowDC(IntPtr hwnd);
+        public static extern IntPtr GetWindowDC(IntPtr hwnd);
         [DllImport("user32.dll")]
-        private static extern IntPtr GetForegroundWindow();
+        public static extern IntPtr GetForegroundWindow();
         [DllImport("user32.dll")]
-        private static extern IntPtr GetWindowRect(IntPtr hWnd, out RECT rect);
+        public static extern IntPtr GetWindowRect(IntPtr hWnd, out RECT rect);
         [DllImport("user32.dll")]
-        private static extern IntPtr GetClientRect(IntPtr hWnd, out RECT rect);
+        public static extern IntPtr GetClientRect(IntPtr hWnd, out RECT rect);
         [DllImport("user32.dll")]
-        private static extern bool PrintWindow(IntPtr hwnd, IntPtr hdcBlt, UInt32 nFlags);
+        public static extern bool PrintWindow(IntPtr hwnd, IntPtr hdcBlt, UInt32 nFlags);
 
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
-        static extern IntPtr FindWindowEx(IntPtr parentHandle, IntPtr childAfter, string lclassName, string windowTitle);
+        public static extern IntPtr FindWindowEx(IntPtr parentHandle, IntPtr childAfter, string lclassName, string windowTitle);
 
         [DllImport("user32.dll")]
         private static extern IntPtr GetDesktopWindow();
@@ -305,15 +305,8 @@ namespace PaiPaiAssistant
         public static Rectangle getIETabWndRect(IntPtr hWnd)
         {
             RECT rect = new RECT();
-            Point point = new Point(0, 0);
-
-            //  if (hWnd != IntPtr.Zero)
-            //  {
-            //      hWnd = FindWindowEx(hWnd, IntPtr.Zero, "XYZ_Renderer", String.Empty);
-            //      // and so on... 
-            //  }
-
-            ClientToScreen(hWnd, ref point);
+            //Point point = new Point(0, 0);
+            //ClientToScreen(hWnd, ref point);
             GetClientRect(hWnd, out rect);
             //return new Rectangle(point.X, point.Y, rect.Right - rect.Left, rect.Bottom - rect.Top);
             return new Rectangle(0,0,rect.Right - rect.Left, rect.Bottom - rect.Top);
@@ -321,6 +314,18 @@ namespace PaiPaiAssistant
         }
 
        
+        public static Rectangle getClientRect(IntPtr hWnd)
+        {
+            RECT rect = new RECT();
+            Point point = new Point(0, 0);
+            ClientToScreen(hWnd, ref point);
+            GetClientRect(hWnd, out rect);
+            //return new Rectangle(point.X, point.Y, rect.Right - rect.Left, rect.Bottom - rect.Top);
+            return new Rectangle(point.X, point.Y, rect.Right - rect.Left, rect.Bottom - rect.Top);
+
+        }
+
+
 
     }
 

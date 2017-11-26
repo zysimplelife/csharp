@@ -104,7 +104,7 @@ namespace PaiPaiAssistant
 
         private void btStart_Click(object sender, EventArgs e)
         {
-           
+
             threadUpdateText = new Thread(new ThreadStart(UpdateTextThread));
             threadUpdateText.Start();
 
@@ -151,8 +151,8 @@ namespace PaiPaiAssistant
                 pWndTab = FindWindowEx(pWndIE, IntPtr.Zero, "Frame Tab", null);
             }
             pWndTab = FindWindowEx(pWndTab, IntPtr.Zero, "TabWindowClass", null);
-           pWndTab = FindWindowEx(pWndTab, IntPtr.Zero, "Shell DocObject View", null);
-           pWndTab = FindWindowEx(pWndTab, IntPtr.Zero, "Internet Explorer_Server", null);
+            pWndTab = FindWindowEx(pWndTab, IntPtr.Zero, "Shell DocObject View", null);
+            pWndTab = FindWindowEx(pWndTab, IntPtr.Zero, "Internet Explorer_Server", null);
 
         }
 
@@ -209,7 +209,7 @@ namespace PaiPaiAssistant
 
             if (isDfClosed)
             {
-                df = new PaintForm(pWndIE);//不穿透鼠标透明窗体
+                df = new PaintForm(pWndTab);//不穿透鼠标透明窗体
 
                 df.Show();//显示
             }
@@ -232,8 +232,8 @@ namespace PaiPaiAssistant
             while (true)
             {
                 //TODO： 最好用一次截屏得到两个结果
-                currentPrice = ocrInt(pWndIE, Configuration.GetClientRect(Configuration.CONFIG_PRICE_RECT));
-                serverTime = ocrText(pWndIE, Configuration.GetClientRect(Configuration.CONFIG_TIME_RECT));
+                currentPrice = ocrInt(pWndTab, Configuration.getRectangleFromConfig(Configuration.CONFIG_PRICE_RECT));
+                serverTime = ocrText(pWndTab, Configuration.getRectangleFromConfig(Configuration.CONFIG_TIME_RECT));
                 log.Info("Got price is " + currentPrice + " time is " + serverTime);
                 Thread.Sleep(200);//让线程暂停  
             }
@@ -340,6 +340,6 @@ namespace PaiPaiAssistant
             }
         }
 
-      
+
     }
 }

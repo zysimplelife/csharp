@@ -15,14 +15,12 @@ namespace PaiPaiAssistant
         private static Point increase_button;
         private static Point increase_input;
 
-        private static Point submit_button  ;
+        private static Point submit_button;
         private static Point submit_input;
 
         private static Dictionary<String, Point> pointMap = new Dictionary<string, Point>();
         private static Dictionary<String, Rectangle> rectMap = new Dictionary<string, Rectangle>();
 
-
-        public static String CONFIG_BASE_POINT = "postion.start";
         public static String CONFIG_PRICE_RECT = "postion.price";
         public static String CONFIG_TIME_RECT = "postion.time";
         public static String CONFIG_INC_IN_POINT = "position.increase.input";
@@ -33,7 +31,7 @@ namespace PaiPaiAssistant
         public static String CONFIG_VERIFICATION_REFESH_POINT = "position.verification.refresh";
         public static String CONFIG_CONFIRM_BTN_POINT = "position.confirm.button";
         public static String CONFIG_CANCEL_BTN_POINT = "position.cancel.button";
-        public static String CONFIG_BEFORE_TARGET   = "position.click.beforeTarget";
+        public static String CONFIG_BEFORE_TARGET = "position.click.beforeTarget";
 
 
         public static int BeforeTarget()
@@ -42,11 +40,11 @@ namespace PaiPaiAssistant
         }
 
 
-        public static Point GetScreenPoint(String key,IntPtr pWnd)
+        public static Point GetScreenPoint(String key, IntPtr pWnd)
         {
             Point point = GetClientPoint(key);
 
-            Rectangle wndRect = ScreenUtils.getIETabWndRect(pWnd);
+            Rectangle wndRect = ScreenUtils.getClientRect(pWnd);
 
             return new Point(point.X + wndRect.X, point.Y + wndRect.Y);
         }
@@ -64,7 +62,7 @@ namespace PaiPaiAssistant
             return point;
         }
 
-        public static Rectangle GetClientRect(String key)
+        public static Rectangle getRectangleFromConfig(String key)
         {
             Rectangle rect = new Rectangle();
 
@@ -75,32 +73,29 @@ namespace PaiPaiAssistant
             }
 
             return rect;
-            
+
         }
-            
+
         public static Rectangle GetScreenRect(String key, IntPtr pWnd)
         {
-            Rectangle client = GetClientRect(key);
-            Rectangle wndRect = ScreenUtils.getIETabWndRect(pWnd);
-            client.X += wndRect.X;
-            client.Y += wndRect.Y;
-            return client;
+            Rectangle rect = getRectangleFromConfig(key);
+            Point point = new Point(0, 0);
+            ScreenUtils.ClientToScreen(pWnd, ref point);
+            rect.X += point.X;
+            rect.Y += point.Y;
+            return rect;
         }
 
-            
- 
+
+
         private static Rectangle getRect(String configKey)
         {
-            String start = ConfigurationManager.AppSettings[CONFIG_BASE_POINT];
-            String[] startPoint = start.Split(',');
-
 
             String position = ConfigurationManager.AppSettings[configKey];
             String[] points = position.Split(',');
 
-
-            Int32 x = Int32.Parse(startPoint[0]) + Int32.Parse(points[0]);
-            Int32 y = Int32.Parse(startPoint[1]) + Int32.Parse(points[1]);
+            Int32 x = Int32.Parse(points[0]);
+            Int32 y = Int32.Parse(points[1]);
             Int32 width = Int32.Parse(points[2]);
             Int32 height = Int32.Parse(points[3]);
 
@@ -110,19 +105,9 @@ namespace PaiPaiAssistant
 
         private static Point getPoint(String configKey)
         {
-            String start = ConfigurationManager.AppSettings[CONFIG_BASE_POINT];
-            String[] startPoint = start.Split(',');
-
-
             String position = ConfigurationManager.AppSettings[configKey];
             String[] points = position.Split(',');
-
-
-            Int32 x = Int32.Parse(startPoint[0]) + Int32.Parse(points[0]);
-            Int32 y = Int32.Parse(startPoint[1]) + Int32.Parse(points[1]);
-        
-
-            return new Point(x, y);
+            return new Point(Int32.Parse(points[0]), Int32.Parse(points[1]));
         }
     }
 }
