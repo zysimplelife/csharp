@@ -51,9 +51,7 @@ namespace PaiPaiAssistant
 
             pWndIE = FindWindow("IEFrame", null);
 
-            //Init OCA
-            engine = new TesseractEngine(@"./tessdata", "eng", EngineMode.Default);
-            engine.SetVariable("tessedit_char_whitelist", "0123456789:");
+            
         }
 
 
@@ -98,6 +96,19 @@ namespace PaiPaiAssistant
             {
                 MessageBox.Show("请先关联IE？");
                 return;
+            }
+            if (engine == null)
+            {
+                //Init OCA
+                try
+                {
+                    engine = new TesseractEngine(@"./tessdata", "eng", EngineMode.Default);
+                    engine.SetVariable("tessedit_char_whitelist", "0123456789:");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Failed to init Tesseract Engine" + ex.ToString());
+                }
             }
 
             threadUpdateText = new Thread(new ThreadStart(UpdateTextThread));
@@ -158,7 +169,7 @@ namespace PaiPaiAssistant
             {
                 return Int32.Parse(ocrText(pWndIE, rect));
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return 0;
             }
@@ -184,7 +195,7 @@ namespace PaiPaiAssistant
 
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return "unrecorded";
             }
@@ -293,7 +304,7 @@ namespace PaiPaiAssistant
                 {
                     //差价100 等待100毫秒出价
                     Thread.Sleep(100);
-                    WinInputHelpers.MouseMoveToClick(Configuration.GetScreenPoint(Configuration.CONFIG_CONFIRM_BTN_POINT, pWndTab));
+                    WinInputHelpers.MouseMoveToClick(Configuration.GetScreenPoint(Configuration.CONFIG_CONFIRM_BTN_POINT, pWndIE));
                     Thread.Sleep(100);
                     break;
                 }
@@ -316,7 +327,7 @@ namespace PaiPaiAssistant
             }
             catch (Exception e)
             {
-                log.Error("Failed to check server time");
+                log.Error("Failed to check server time",e);
                 return false;
             }
         }
