@@ -37,6 +37,7 @@ namespace PaiPaiAssistant
 
         private Int32 currentPrice;
         private Int32 targetPrice;
+        private Int32 different;
         private String serverTime;
         private String targetTime = "11:29:45";
         private int increasePrice = 900;
@@ -45,13 +46,13 @@ namespace PaiPaiAssistant
         private Double remainTime;
         private String delay;
 
+        private Boolean started = false;
+
+
         public Information()
         {
             InitializeComponent();
-
             pWndIE = FindWindow("IEFrame", null);
-
-            
         }
 
 
@@ -79,45 +80,68 @@ namespace PaiPaiAssistant
                 if (MessageBox.Show("是否重新启动IE？", "确认", MessageBoxButtons.YesNo) == DialogResult.Yes)
                 {
                     startIE();
+                    Thread.Sleep(2000);
                     setIEWnd();
                 }
             }
             else
             {
                 setIEWnd();
-                //获得窗口title
-                MessageBox.Show("关联IE窗口成功 title = " + ScreenHelpers.GetWindowTitle(pWndIE));
             }
         }
 
         private void btStart_Click(object sender, EventArgs e)
         {
+            if (started)
+            {
+                stop();
+                return;
+            }
+
             if (pWndIE == IntPtr.Zero)
             {
                 MessageBox.Show("请先关联IE？");
                 return;
             }
+
             if (engine == null)
             {
-                //Init OCA
-                try
-                {
-                    engine = new TesseractEngine(@"./tessdata", "eng", EngineMode.Default);
-                    engine.SetVariable("tessedit_char_whitelist", "0123456789:");
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Failed to init Tesseract Engine" + ex.ToString());
-                }
+                initOcr();
             }
 
-            threadUpdateText = new Thread(new ThreadStart(UpdateTextThread));
-            threadUpdateText.Start();
+            started = true;
 
             threadOcr = new Thread(new ThreadStart(this.ocrThread));
             threadOcr.Start();
 
-            btStart.Text = btStart.Text.Equals("启动") ? "停止" : "启动";
+            threadUpdateText = new Thread(new ThreadStart(UpdateTextThread));
+            threadUpdateText.Start();
+
+
+            threadAutoConfirm = new Thread(new ThreadStart(this.AutoConfirmThread));
+            threadAutoConfirm.Start();
+
+            bt_start.Text = started ? "停止" : "启动";
+        }
+
+        private void stop()
+        {
+            started = false;
+            tbRemainTime.Invoke(new Action(() => bt_start.Text = "启动"));
+        }
+
+        private void initOcr()
+        {
+            //Init OCA
+            try
+            {
+                engine = new TesseractEngine(@"./tessdata", "eng", EngineMode.Default);
+                engine.SetVariable("tessedit_char_whitelist", "0123456789:");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Failed to init Tesseract Engine" + ex.ToString());
+            }
         }
 
         private void stopIE()
@@ -151,15 +175,20 @@ namespace PaiPaiAssistant
                 pWndIE = FindWindow("IEFrame", null);
             }
 
-            pWndTab = FindWindowEx(pWndIE, IntPtr.Zero, "Frame Tab", null);
-            while (pWndIE == IntPtr.Zero)
+            this.pWndTab = FindWindowEx(pWndIE, IntPtr.Zero, "Frame Tab", null);
+            this.pWndTab = FindWindowEx(pWndTab, IntPtr.Zero, "TabWindowClass", null);
+            this.pWndTab = FindWindowEx(pWndTab, IntPtr.Zero, "Shell DocObject View", null);
+            this.pWndTab = FindWindowEx(pWndTab, IntPtr.Zero, "Internet Explorer_Server", null);
+
+            if(pWndTab == IntPtr.Zero)
             {
-                Thread.Sleep(1000);
-                pWndTab = FindWindowEx(pWndIE, IntPtr.Zero, "Frame Tab", null);
+                //获得窗口title
+                MessageBox.Show("关联IE窗口失败，请重试");
+            }else
+            {
+                MessageBox.Show("关联IE窗口成功 title = " + ScreenHelpers.GetWindowTitle(pWndIE));
             }
-            pWndTab = FindWindowEx(pWndTab, IntPtr.Zero, "TabWindowClass", null);
-            pWndTab = FindWindowEx(pWndTab, IntPtr.Zero, "Shell DocObject View", null);
-            pWndTab = FindWindowEx(pWndTab, IntPtr.Zero, "Internet Explorer_Server", null);
+
 
         }
 
@@ -230,15 +259,26 @@ namespace PaiPaiAssistant
 
 
         /// <summary>  
-        /// 不带参数的启动方法  
+        /// 用来获得解读的线程  
         /// </summary>  
         public void ocrThread()
         {
-            while (!btStart.Text.Equals("启动"))
+            while (started)
             {
                 //TODO： 最好用一次截屏得到两个结果
-                currentPrice = ocrInt(pWndTab, Configuration.getRectangleFromConfig(Configuration.CONFIG_PRICE_RECT));
-                serverTime = ocrText(pWndTab, Configuration.getRectangleFromConfig(Configuration.CONFIG_TIME_RECT));
+                int price = ocrInt(pWndTab, Configuration.getRectangleFromConfig(Configuration.CONFIG_PRICE_RECT));
+                if (price != 0) // only update validate value
+                {
+                    this.currentPrice = price;
+                }
+
+                string serverTime = ocrText(pWndTab, Configuration.getRectangleFromConfig(Configuration.CONFIG_TIME_RECT));
+
+                if (serverTime != "unrecorded") // only update validate value
+                {
+                    this.serverTime = serverTime;
+                }
+
                 log.Info("Got price is " + currentPrice + " time is " + serverTime);
                 Thread.Sleep(200);//让线程暂停  
             }
@@ -246,70 +286,56 @@ namespace PaiPaiAssistant
 
         public void UpdateTextThread()
         {
-            while (!btStart.Text.Equals("启动"))
+            while (started)
             {
                 tbTime.Invoke(new Action(() => tbTime.Text = serverTime));
                 tbPrice.Invoke(new Action(() => tbPrice.Text = currentPrice.ToString()));
                 tbTargetPrice.Invoke(new Action(() => tbTargetPrice.Text = targetPrice.ToString()));
                 tbTargetTime.Invoke(new Action(() => tbTargetTime.Text = targetTime.ToString()));
                 tbRemainTime.Invoke(new Action(() => tbRemainTime.Text = remainTime.ToString()));
-                labelStatus.Invoke(new Action(() => labelStatus.Text = isStarted().ToString()));
+                tb_differences.Invoke(new Action(() => tb_differences.Text = different.ToString()));
                 //利用窗口的名称来退出线程，不知道好不好         
-                Thread.Sleep(200);//让线程暂停  
-
+                Thread.Sleep(100);//让线程暂停  
             }
         }
 
-
-        private void plus700_Click(object sender, EventArgs e)
-        {
-            if (isStarted())
-            {
-                return;
-            }
-
-            threadAutoConfirm = new Thread(new ThreadStart(this.AutoConfirmThread));
-
-            threadAutoConfirm.Start();
-
-        }
-
-        private bool isStarted()
-        {
-            return threadAutoConfirm != null && threadAutoConfirm.IsAlive;
-        }
-
+      
 
         /// <summary>  
-        /// 不带参数的启动方法  
+        /// 自动拍牌的线程  
         /// </summary>  
         public void AutoConfirmThread()
         {
+            //线程开始前清空历史数据
+            targetPrice = 0;
+            different = 0;
+
             // wait until time to input price
-            while (!isTimeToImputPrice())
+            while (!isTimeToImputPrice() && started)
             {
                 Thread.Sleep(100);
             }
 
-            // Click +700
-            clickAddSubmit(increasePrice);
-
-            while (true)
+            if (started)
             {
-                Int32 different = targetPrice - currentPrice;
-                tb_differences.Invoke(new Action(() => tb_differences.Text = different.ToString()));
+                clickAddSubmit(increasePrice);
+            }
+
+            while (started)
+            {
+                different = targetPrice - currentPrice;
 
                 //当前价格小于差价 或者超过强制出价时间则出价
                 if (different <= Configuration.BeforeTarget())
                 {
                     //差价100 等待100毫秒出价
                     Thread.Sleep(100);
-                    WinInputHelpers.MouseMoveToClick(Configuration.GetScreenPoint(Configuration.CONFIG_CONFIRM_BTN_POINT, pWndIE));
+                    WinInputHelpers.MouseMoveToClick(Configuration.GetScreenPoint(Configuration.CONFIG_CONFIRM_BTN_POINT, pWndTab));
                     Thread.Sleep(100);
-                    break;
                 }
-                Thread.Sleep(100);
-
+                //等待5秒，让程序可以获得最后的价格
+                Thread.Sleep(5000);
+                stop();
                 //暂时不强制时间出价
                 //Convert.ToDateTime(serverTime) >= Convert.ToDateTime(forceConfirmTime);
             }
@@ -327,7 +353,7 @@ namespace PaiPaiAssistant
             }
             catch (Exception e)
             {
-                log.Error("Failed to check server time",e);
+                log.Error("Failed to check server time", e);
                 return false;
             }
         }

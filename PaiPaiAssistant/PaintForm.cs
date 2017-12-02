@@ -31,6 +31,8 @@ namespace PaiPaiAssistant
             // 画图 
             Graphics dc = e.Graphics;
             Pen pen = new Pen(Color.Red, 1);
+            Font font  = new Font("Tahoma", 8);
+
             Brush brush = (Brush)Brushes.Red;
 
             Rectangle rectIE = ScreenHelpers.getClientRect(pWnd);
@@ -57,20 +59,21 @@ namespace PaiPaiAssistant
 
             // 出价
             point = Configuration.GetScreenPoint(Configuration.CONFIG_SUBMIT_BTN_POINT, pWnd);
-            dc.FillRectangle(brush, point.X, point.Y, 5, 5);
+            dc.DrawString("出价", font, brush, new Rectangle(point.X, point.Y, 40, 15));
 
 
             // 确认
             point = Configuration.GetScreenPoint(Configuration.CONFIG_CONFIRM_BTN_POINT, pWnd);
-            dc.FillRectangle(brush, point.X, point.Y, 5, 5);
+            dc.DrawString("确认", font, brush, new Rectangle(point.X, point.Y, 40, 15));
+
 
 
             // 取消
             point = Configuration.GetScreenPoint(Configuration.CONFIG_CANCEL_BTN_POINT, pWnd);
-            dc.FillRectangle(brush, point.X, point.Y, 5, 5);
+            dc.DrawString("取消", font, brush, new Rectangle(point.X, point.Y, 40, 15));
 
         }
 
-       
+
     }
 }
