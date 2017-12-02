@@ -34,17 +34,21 @@ namespace PaiPaiAssistant
 
 
         //Runtime Informations
-
         private Int32 currentPrice;
         private Int32 targetPrice;
-        private Int32 different;
         private String serverTime;
-        private String targetTime = "11:29:45";
-        private int increasePrice = 900;
-        private String forceConfirmTime = "11:29:56";
-
         private Double remainTime;
+        private Int32 different;
+
+
+        //配置信息
+        private DateTime targetTime;
+        private DateTime forceConfirmTime;
+        private Int32 increasePrice;
+        private Int32 advancedPrice;
         private String delay;
+
+
 
         private Boolean started = false;
 
@@ -104,6 +108,11 @@ namespace PaiPaiAssistant
                 return;
             }
 
+            if (!setConfigurations())
+            {
+                return;
+            }
+
             if (engine == null)
             {
                 initOcr();
@@ -122,6 +131,24 @@ namespace PaiPaiAssistant
             threadAutoConfirm.Start();
 
             bt_start.Text = started ? "停止" : "启动";
+        }
+
+        private Boolean setConfigurations()
+        {
+            try
+            {
+                targetTime = Convert.ToDateTime(this.config_time_to_increase.Text);
+                forceConfirmTime = Convert.ToDateTime(this.config_force_time.Text);
+                increasePrice = Convert.ToInt32(this.config_increase_amount.Text);
+                advancedPrice = Convert.ToInt32(this.config_advance_price.Text);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("启动失败" + ex.ToString());
+                return false;
+            }
+
         }
 
         private void stop()
@@ -180,11 +207,12 @@ namespace PaiPaiAssistant
             this.pWndTab = FindWindowEx(pWndTab, IntPtr.Zero, "Shell DocObject View", null);
             this.pWndTab = FindWindowEx(pWndTab, IntPtr.Zero, "Internet Explorer_Server", null);
 
-            if(pWndTab == IntPtr.Zero)
+            if (pWndTab == IntPtr.Zero)
             {
                 //获得窗口title
                 MessageBox.Show("关联IE窗口失败，请重试");
-            }else
+            }
+            else
             {
                 MessageBox.Show("关联IE窗口成功 title = " + ScreenHelpers.GetWindowTitle(pWndIE));
             }
@@ -294,12 +322,11 @@ namespace PaiPaiAssistant
                 tbTargetTime.Invoke(new Action(() => tbTargetTime.Text = targetTime.ToString()));
                 tbRemainTime.Invoke(new Action(() => tbRemainTime.Text = remainTime.ToString()));
                 tb_differences.Invoke(new Action(() => tb_differences.Text = different.ToString()));
-                //利用窗口的名称来退出线程，不知道好不好         
                 Thread.Sleep(100);//让线程暂停  
             }
         }
 
-      
+
 
         /// <summary>  
         /// 自动拍牌的线程  
@@ -323,32 +350,51 @@ namespace PaiPaiAssistant
 
             while (started)
             {
-                different = targetPrice - currentPrice;
+                //最低出价是当前价格+300
+                different = targetPrice - (currentPrice + 300);
 
                 //当前价格小于差价 或者超过强制出价时间则出价
-                if (different <= Configuration.BeforeTarget())
+                if (isTimeToConfirm())
                 {
-                    //差价100 等待100毫秒出价
-                    Thread.Sleep(100);
-                    WinInputHelpers.MouseMoveToClick(Configuration.GetScreenPoint(Configuration.CONFIG_CONFIRM_BTN_POINT, pWndTab));
-                    Thread.Sleep(100);
+                    clickConfirmAndStop();
                 }
-                //等待5秒，让程序可以获得最后的价格
-                Thread.Sleep(5000);
-                stop();
+                Thread.Sleep(100);
                 //暂时不强制时间出价
-                //Convert.ToDateTime(serverTime) >= Convert.ToDateTime(forceConfirmTime);
             }
+        }
+
+        private bool isTimeToConfirm()
+        {
+            //如果本地时间和服务器时间相差超过10秒，则不采用本地时间
+            int dis = (DateTime.Now - forceConfirmTime).Seconds;
+            if (Math.Abs(dis) > 5)
+            {
+                return different <= advancedPrice;
+            }
+            else
+            {
+                return different <= advancedPrice || DateTime.Now >= forceConfirmTime;
+
+            }
+        }
+
+        private void clickConfirmAndStop()
+        {
+            //差价100 等待100毫秒出价
+            Thread.Sleep(100);
+            WinInputHelpers.MouseMoveToClick(Configuration.GetScreenPoint(Configuration.CONFIG_CONFIRM_BTN_POINT, pWndTab));
+            //等待5秒，让程序可以获得最后的价格
+            Thread.Sleep(5000);
+            stop();
         }
 
         private bool isTimeToImputPrice()
         {
             try
             {
-                DateTime dtTargetTime = Convert.ToDateTime(targetTime);
                 DateTime dtServerTime = Convert.ToDateTime(serverTime);
                 //这里必须要保留，这样才可以在界面上显示出来
-                this.remainTime = (dtTargetTime - dtServerTime).TotalSeconds;
+                this.remainTime = (targetTime - dtServerTime).TotalSeconds;
                 return remainTime <= 0;
             }
             catch (Exception e)

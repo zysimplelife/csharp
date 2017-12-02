@@ -284,6 +284,7 @@
             this.config_advance_price.Name = "config_advance_price";
             this.config_advance_price.Size = new System.Drawing.Size(129, 21);
             this.config_advance_price.TabIndex = 1;
+            this.config_advance_price.Text = "100";
             // 
             // label5
             // 
@@ -293,7 +294,7 @@
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(53, 12);
             this.label5.TabIndex = 2;
-            this.label5.Text = "强制时间";
+            this.label5.Text = "强制出价";
             // 
             // config_force_time
             // 
@@ -302,6 +303,7 @@
             this.config_force_time.Name = "config_force_time";
             this.config_force_time.Size = new System.Drawing.Size(129, 21);
             this.config_force_time.TabIndex = 3;
+            this.config_force_time.Text = "11:29:56";
             // 
             // label3
             // 
@@ -320,6 +322,7 @@
             this.config_increase_amount.Name = "config_increase_amount";
             this.config_increase_amount.Size = new System.Drawing.Size(129, 21);
             this.config_increase_amount.TabIndex = 5;
+            this.config_increase_amount.Text = "900";
             // 
             // label6
             // 
@@ -338,6 +341,7 @@
             this.config_time_to_increase.Name = "config_time_to_increase";
             this.config_time_to_increase.Size = new System.Drawing.Size(129, 21);
             this.config_time_to_increase.TabIndex = 7;
+            this.config_time_to_increase.Text = "11:29:45";
             // 
             // groupBox4
             // 
